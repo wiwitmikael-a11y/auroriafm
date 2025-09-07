@@ -18,11 +18,7 @@ const Sidebar: React.FC<SidebarProps> = ({ menuConfig }) => {
   ) || menuConfig[0]; // Default to first category
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `flex items-center px-4 py-2.5 text-md font-medium rounded-lg transition-all duration-200 ${
-      isActive
-        ? 'bg-cyan-500/20 text-cyan-300 shadow-inner shadow-cyan-500/20'
-        : 'text-text-secondary hover:bg-slate-700/50 hover:text-text-primary'
-    }`;
+    `sidebar-link ${isActive ? 'active' : ''}`;
 
   return (
     <aside className="w-64 flex-shrink-0 flex flex-col p-4 glass-surface m-4">
@@ -37,10 +33,11 @@ const Sidebar: React.FC<SidebarProps> = ({ menuConfig }) => {
       </div>
       <nav className="flex-grow space-y-2 overflow-y-auto" aria-labelledby="sidebar-heading">
         <h2 id="sidebar-heading" className="text-lg font-display text-text-primary px-2 mb-2">{activeCategory.name}</h2>
-        <div className="space-y-1">
+        <div className="space-y-2">
             {activeCategory.links.map(link => (
                 <NavLink key={link.path} to={link.path} className={navLinkClass}>
-                    {link.label}
+                    <span className="link-indicator"></span>
+                    <span>{link.label}</span>
                 </NavLink>
             ))}
         </div>
