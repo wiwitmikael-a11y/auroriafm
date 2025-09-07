@@ -25,7 +25,7 @@ let seededRandom = mulberry32(worldSeed);
 // --- Engine Initialization ---
 const initialize = (seed: number): void => {
     worldSeed = seed;
-    seededRandom = mulberry32(worldSeed);
+    seededRandom = mulberry32(seed);
     console.log(`Aetherium Chronicle Core initialized with seed: ${seed}`);
 };
 
@@ -81,24 +81,25 @@ const derivePlaystyle = (player: Player): string => {
     const { position, attributes: attrs } = player;
     if (position === 'GK') return 'Goalkeeper';
 
-    const sortedAttrs = Object.entries(attrs).sort(([,a],[,b]) => b-a);
-    const topAttr = sortedAttrs[0][0];
-
     if (position === 'DF') {
-        if (attrs.strength > 80 && attrs.tackling > 80) return 'Cogwork Defender';
+        if (attrs.strength > 82 && attrs.tackling > 82) return 'Cogwork Defender';
         if (attrs.speed > 80 && attrs.tackling > 75) return 'Swift Stopper';
+        if (attrs.passing > 78 && attrs.vision > 75) return 'Ball-Playing Sentinel';
+        if (attrs.arcane_dribble > 75 && attrs.tackling > 75) return 'Aether-Infused Blocker';
         return 'Central Defender';
     }
     if (position === 'MF') {
-        if (attrs.passing > 85 && attrs.vision > 85) return 'Aether-Weaver';
-        if (attrs.tackling > 85 && attrs.stamina > 85) return 'Midfield Engine';
-        if (attrs.arcane_dribble > 85) return 'Arcane Winger';
+        if (attrs.passing > 85 && attrs.vision > 85) return 'Aetheric Playmaker';
+        if (attrs.tackling > 85 && attrs.stamina > 85) return 'Tireless Engine';
+        if (attrs.arcane_dribble > 85 && attrs.dribbling > 80) return 'Arcane Winger';
+        if (attrs.temporal_flux > 82 && attrs.passing > 80) return 'Deep-Lying Magister';
         return 'Midfielder';
     }
     if (position === 'FW') {
-        if (attrs.strength > 85 && attrs.shooting > 80) return 'Target Man';
-        if (attrs.speed > 85 && attrs.shooting > 80) return 'Quicksilver Forward';
+        if (attrs.strength > 85 && attrs.shooting > 80) return 'Goliath Forward';
+        if (attrs.speed > 85 && attrs.shooting > 80) return 'Quicksilver Striker';
         if (attrs.elemental_shot > 88) return 'Elemental Striker';
+        if (attrs.dribbling > 82 && attrs.shooting < 75) return 'Shadow Striker';
         return 'Forward';
     }
     return 'Player';
@@ -166,7 +167,7 @@ const initializeWorld = (): { players: Player[], staff: Staff[] } => {
 };
 
 const generateProceduralCrest = (tags: string, palette: string[]): string => {
-    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+    const svg = `<svg xmlns="http://www.w.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
         <rect width="100" height="100" fill="${palette[0] || '#ccc'}" />
         <circle cx="50" cy="50" r="30" fill="${palette[1] || '#aaa'}" stroke="${palette[0]}" stroke-width="4" />
         <text x="50" y="55" font-family="Exo 2, sans-serif" font-size="12" fill="#fff" text-anchor="middle" font-weight="bold">${tags.split(',')[0].substring(0,3).toUpperCase()}</text>

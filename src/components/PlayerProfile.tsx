@@ -5,24 +5,30 @@ import NationFlag from './NationFlag';
 import NicknameModal from './NicknameModal';
 import RadarChart from './RadarChart';
 
-interface PlayerProfileProps {
-  player: Player;
-  onUpdatePlayer: (player: Player) => void;
+interface AttributeGroupProps {
+    title: string;
+    attributes: Partial<PlayerAttributes>;
 }
 
-const AttributeGroup: React.FC<{ title: string; attributes: Partial<PlayerAttributes>; player: Player }> = ({ title, attributes }) => (
+const AttributeGroup: React.FC<AttributeGroupProps> = ({ title, attributes }) => (
     <div className="glass-surface p-3 rounded-md">
         <h3 className="text-md font-bold text-accent mb-2 uppercase tracking-wider">{title}</h3>
-        <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
+        <div className="flex flex-col space-y-1 text-xs">
             {Object.entries(attributes).map(([key, value]) => (
                 <div key={key} className="flex justify-between">
-                    <span className="uppercase text-text-secondary">{key.replace(/_/g, ' ')}</span>
+                    <span className="uppercase text-text-secondary attribute-label">{key.replace(/_/g, ' ')}</span>
                     <span className="font-bold text-text-emphasis">{value}</span>
                 </div>
             ))}
         </div>
     </div>
 );
+
+// FIX: Define PlayerProfileProps interface
+interface PlayerProfileProps {
+    player: Player;
+    onUpdatePlayer: (player: Player) => void;
+}
 
 const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer }) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
@@ -70,14 +76,14 @@ const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer })
         {/* Attributes */}
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 grid grid-cols-2 gap-4">
-                <AttributeGroup title="Physical" attributes={physicalAttrs} player={player}/>
-                <AttributeGroup title="Technical" attributes={technicalAttrs} player={player}/>
-                <AttributeGroup title="Mental" attributes={mentalAttrs} player={player}/>
-                <AttributeGroup title="Magical" attributes={magicalAttrs} player={player}/>
+                <AttributeGroup title="Physical" attributes={physicalAttrs} />
+                <AttributeGroup title="Technical" attributes={technicalAttrs} />
+                <AttributeGroup title="Mental" attributes={mentalAttrs} />
+                <AttributeGroup title="Magical" attributes={magicalAttrs} />
             </div>
             <div className="flex flex-col items-center justify-center glass-surface p-2 rounded-md">
                 <h3 className="text-md font-bold text-accent mb-1 uppercase tracking-wider">Attribute Hex</h3>
-                <RadarChart data={radarData} size={220}/>
+                <RadarChart data={radarData} size={280}/>
             </div>
         </div>
 

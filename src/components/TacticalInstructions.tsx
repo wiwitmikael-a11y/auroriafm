@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { TacticSettings, FormationShape } from '../types';
+import MiniFormationPitch from './MiniFormationPitch';
 
 interface TacticalInstructionsProps {
   tactics: TacticSettings;
@@ -8,6 +9,7 @@ interface TacticalInstructionsProps {
 
 const TacticalInstructions: React.FC<TacticalInstructionsProps> = ({ tactics, onAutoAssign }) => {
   const formations: FormationShape[] = ['4-4-2', '4-3-3', '3-5-2', '5-3-2'];
+  const [selectedFormation, setSelectedFormation] = useState<FormationShape>(tactics.formation);
 
   return (
     <div>
@@ -15,10 +17,17 @@ const TacticalInstructions: React.FC<TacticalInstructionsProps> = ({ tactics, on
       <div className="glass-surface p-4 space-y-4">
         <div>
           <label className="block text-xs font-medium text-text-secondary mb-1">Formation</label>
-          <select defaultValue={tactics.formation} className="w-full">
+          <select 
+            value={selectedFormation} 
+            onChange={(e) => setSelectedFormation(e.target.value as FormationShape)} 
+            className="w-full"
+          >
             {formations.map(f => <option key={f}>{f}</option>)}
           </select>
         </div>
+        
+        <MiniFormationPitch formation={selectedFormation} />
+
         <button onClick={onAutoAssign} className="w-full button-primary" style={{backgroundColor: 'var(--color-accent-secondary)'}}>
             Auto-Assign Best XI
         </button>
