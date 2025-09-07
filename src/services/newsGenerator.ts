@@ -46,6 +46,21 @@ export const generateMatchReportMessage = (result: MatchResult, clubs: Club[], d
     };
 };
 
+export const generateScoutingReportMessage = (player: Player, date: GameDate): InboxMessage => {
+    const subject = `Scouting Report: ${player.name.first} ${player.name.last}`;
+    let body = `Gaffer,\n\nThe full report on ${player.name.first} ${player.name.last} is in. We now have a complete picture of his abilities.\n\nOur assessment concludes his current ability is a solid ${player.current_ability}, and we believe he has the potential to reach a rating of ${player.potential_ability}.\n\nHis key attributes appear to be his high ${Object.keys(player.attributes).reduce((a, b) => player.attributes[a as keyof typeof player.attributes] > player.attributes[b as keyof typeof player.attributes] ? a : b).replace(/_/g, ' ')}.\n\nAll his details in the player profile are now fully updated.\n\n- Chief Scout`;
+
+    return {
+        id: `msg${messageIdCounter++}`,
+        type: 'Scouting',
+        sender: 'Chief Scout',
+        subject,
+        date: `Season ${date.season}, Day ${date.day}`,
+        body,
+        isRead: false,
+    }
+};
+
 export const generateRivalryHypeMessage = (homeTeam: Club, awayTeam: Club, date: GameDate): InboxMessage => {
     const subject = `Rivalry Clash: ${homeTeam.name} vs ${awayTeam.name}!`;
     const body = `The air crackles with anticipation! A historic rivalry is renewed today as "${homeTeam.nickname}" host "${awayTeam.nickname}" at ${homeTeam.stadium}.\n\nBragging rights are on the line in what is sure to be a fiery encounter. The fans are expectant, and neither side will want to give an inch in this crucial league match-up. Expect fireworks!`;

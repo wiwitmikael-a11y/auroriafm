@@ -1,40 +1,52 @@
-import { LeagueTableRow, Fixture } from '../types';
+import { Fixture, Club } from "../types";
+import { CLUBS } from "./clubs";
 
-export const INITIAL_LEAGUE_TABLE: LeagueTableRow[] = [];
-
-// Function to generate a round-robin schedule
-export const generateFixtures = (clubIds: string[]): Fixture[] => {
+export const generateLeagueFixtures = (clubs: Club[]): Fixture[] => {
     const fixtures: Fixture[] = [];
-    const teams = [...clubIds];
-    const numTeams = teams.length;
-    let day = 1;
-
-    if (numTeams % 2 !== 0) {
-        teams.push("bye"); // Add a dummy team for odd numbers
+    let localClubs = [...clubs];
+    if (localClubs.length % 2 !== 0) {
+        // Add a dummy team for an even number of teams
+        localClubs.push({ id: 'dummy', name: 'Dummy', short_name: 'DUM' } as Club);
     }
 
-    const rounds = (numTeams - 1) * 2; // Home and away
-    
-    for (let round = 0; round < rounds; round++) {
-        for (let match = 0; match < numTeams / 2; match++) {
-            const home = teams[match];
-            const away = teams[numTeams - 1 - match];
+    const numTeams = localClubs.length;
+    const numRounds = (numTeams - 1);
+    const matchesPerRound = numTeams / 2;
+    let dayCounter = 7; // Start first match on day 7
 
-            if (home !== "bye" && away !== "bye") {
-                 // Alternate home and away
-                if (round % 2 === 0) {
-                    fixtures.push({ day, home_team_id: home, away_team_id: away });
-                } else {
-                    fixtures.push({ day, home_team_id: away, away_team_id: home });
-                }
+    const teamIds = localClubs.map(c => c.id);
+
+    // First half of the season
+    for (let round = 0; round < numRounds; round++) {
+        for (let match = 0; match < matchesPerRound; match++) {
+            const home = teamIds[match];
+            const away = teamIds[numTeams - 1 - match];
+            if(home !== 'dummy' && away !== 'dummy') {
+                fixtures.push({ day: dayCounter, home_team_id: home, away_team_id: away });
             }
         }
-        day += 7; // One match per week
-
         // Rotate teams
-        const lastTeam = teams.pop()!;
-        teams.splice(1, 0, lastTeam);
+        const lastTeam = teamIds.pop()!;
+        teamIds.splice(1, 0, lastTeam);
+        dayCounter += 7; // One match per week
     }
 
-    return fixtures;
+    // Second half of the season (reversed fixtures)
+    const firstHalfFixtures = [...fixtures];
+    firstHalfFixtures.forEach(fixture => {
+        fixtures.push({
+            day: dayCounter,
+            home_team_id: fixture.away_team_id,
+            away_team_id: fixture.home_team_id,
+        });
+        if (fixtures.length % matchesPerRound === 0) {
+            dayCounter += 7;
+        }
+    });
+
+
+    return fixtures.sort((a,b) => a.day - b.day);
 };
+
+// Initial generation for context
+export const LEAGUE_FIXTURES = generateLeagueFixtures([...CLUBS]);

@@ -1,5 +1,5 @@
-import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
-import { ACC } from '../engine/ACC';
+import React, { createContext, useContext, ReactNode, useCallback } from 'react';
+import { assetManager } from '../services/assetManager';
 
 interface CrestContextType {
   getCrest: (tags: string, palette: string[]) => Promise<string>;
@@ -8,18 +8,11 @@ interface CrestContextType {
 const CrestContext = createContext<CrestContextType | undefined>(undefined);
 
 export const CrestProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
-  const [crestCache, setCrestCache] = useState<Record<string, string>>({});
 
   const getCrest = useCallback(async (tags: string, palette: string[]): Promise<string> => {
-    const cacheKey = `${tags}-${palette.join('-')}`;
-    if (crestCache[cacheKey]) {
-      return crestCache[cacheKey];
-    }
-
-    const url = ACC.generateProceduralCrest(tags, palette);
-    setCrestCache(prev => ({ ...prev, [cacheKey]: url }));
-    return url;
-  }, [crestCache]);
+    // Delegate crest generation and caching to the central asset manager
+    return assetManager.generateCrest(tags, palette);
+  }, []);
 
   return (
     <CrestContext.Provider value={{ getCrest }}>

@@ -1,16 +1,19 @@
 import React, { useState, useMemo } from 'react';
 import { useWorld } from '../contexts/WorldContext';
-import { Player } from '../types';
+import { Player, Rarity } from '../types';
 import NationFlag from '../components/NationFlag';
 import PlayerDetailModal from '../components/PlayerDetailModal';
+import { NATIONS } from '../data/nations';
 
-type SortableKeys = keyof Pick<Player, 'age' | 'current_ability' | 'value'> | 'name';
+type SortableKeys = keyof Pick<Player, 'age' | 'current_ability' | 'value' | 'scouting_knowledge'> | 'name';
 
 const Transfers: React.FC = () => {
     const { players, managerClubId } = useWorld();
-    const [filters, setFilters] = useState({ name: '', position: 'Any', maxAge: 40, minValue: 0 });
+    const [filters, setFilters] = useState({ name: '', position: 'Any', maxAge: 40, minValue: 0, rarity: 'Any', nationId: 'Any' });
     const [sortConfig, setSortConfig] = useState<{ key: SortableKeys; direction: 'asc' | 'desc' }>({ key: 'current_ability', direction: 'desc' });
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
+    
+    const rarities: Rarity[] = ['Common', 'Rare', 'Epic', 'Legend'];
 
     const transferTargets = useMemo(() => {
         let sortableItems = players
@@ -20,7 +23,9 @@ const Transfers: React.FC = () => {
                 const posMatch = filters.position === 'Any' || p.position === filters.position;
                 const ageMatch = p.age <= filters.maxAge;
                 const valueMatch = p.value >= filters.minValue;
-                return nameMatch && posMatch && ageMatch && valueMatch;
+                const rarityMatch = filters.rarity === 'Any' || p.rarity === filters.rarity;
+                const nationMatch = filters.nationId === 'Any' || p.nation_id === filters.nationId;
+                return nameMatch && posMatch && ageMatch && valueMatch && rarityMatch && nationMatch;
             });
 
         if (sortConfig.key) {
@@ -72,26 +77,34 @@ const Transfers: React.FC = () => {
                 </div>
                 
                 <div className="mb-6 p-4 glass-surface flex-shrink-0">
-                    <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
                         <input 
                             type="text"
                             name="name"
                             placeholder="Search player name..."
-                            className="w-full"
+                            className="w-full lg:col-span-2"
                             onChange={handleFilterChange}
                         />
-                         <select name="position" className="w-full" onChange={handleFilterChange}>
+                         <select name="position" className="w-full" onChange={handleFilterChange} value={filters.position}>
                             <option>Any</option>
                             <option>GK</option>
                             <option>DF</option>
                             <option>MF</option>
                             <option>FW</option>
                         </select>
+                        <select name="rarity" className="w-full" onChange={handleFilterChange} value={filters.rarity}>
+                            <option>Any</option>
+                            {rarities.map(r => <option key={r} value={r}>{r}</option>)}
+                        </select>
+                        <select name="nationId" className="w-full" onChange={handleFilterChange} value={filters.nationId}>
+                            <option value="Any">Any Nation</option>
+                            {NATIONS.map(n => <option key={n.id} value={n.id}>{n.adjective}</option>)}
+                        </select>
                         <div>
                             <label className="text-xs text-text-secondary">Max Age: {filters.maxAge}</label>
                             <input type="range" name="maxAge" min="16" max="40" value={filters.maxAge} onChange={handleFilterChange} />
                         </div>
-                         <div>
+                         <div className="lg:col-span-2">
                             <label className="text-xs text-text-secondary">Min Value: ${Number(filters.minValue).toLocaleString()}</label>
                             <input type="range" name="minValue" min="0" max="10000000" step="100000" value={filters.minValue} onChange={handleFilterChange} />
                         </div>
@@ -107,6 +120,7 @@ const Transfers: React.FC = () => {
                                 <th>Pos</th>
                                 <th className="sortable" onClick={() => requestSort('current_ability')}>Ability{getSortIndicator('current_ability')}</th>
                                 <th className="sortable" onClick={() => requestSort('value')}>Value{getSortIndicator('value')}</th>
+                                <th className="sortable" onClick={() => requestSort('scouting_knowledge')}>Scouted{getSortIndicator('scouting_knowledge')}</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -120,8 +134,9 @@ const Transfers: React.FC = () => {
                                     </td>
                                     <td>{player.age}</td>
                                     <td>{player.position}</td>
-                                    <td className="font-bold">{player.current_ability}</td>
+                                    <td className="font-bold">{player.scouting_knowledge < 100 ? '?' : player.current_ability}</td>
                                     <td>${player.value.toLocaleString()}</td>
+                                    <td>{player.scouting_knowledge}%</td>
                                 </tr>
                             ))}
                         </tbody>

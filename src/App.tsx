@@ -1,84 +1,83 @@
 import React from 'react';
-import { HashRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+
 import Sidebar from './components/Sidebar';
+import Topbar from './components/Topbar';
 import Dashboard from './pages/Dashboard';
 import Squad from './pages/Squad';
 import Tactics from './pages/Tactics';
-import Transfers from './pages/Transfers';
 import LeagueTable from './pages/LeagueTable';
+import Transfers from './pages/Transfers';
+import ClubDirectory from './pages/ClubDirectory';
+import Inbox from './pages/Inbox';
+import Guilds from './pages/Guilds';
+import ClubHistory from './pages/ClubHistory';
 import Finances from './pages/Finances';
 import Staff from './pages/Staff';
-import Training from './pages/Training';
-import ClubDirectory from './pages/ClubDirectory';
-import Guilds from './pages/Guilds';
-import Inbox from './pages/Inbox';
 import Match from './pages/Match';
-import ClubHistory from './pages/ClubHistory';
-import { useWorld } from './contexts/WorldContext';
-import LoadingScreen from './components/LoadingScreen';
-import Topbar from './components/Topbar';
+import Training from './pages/Training';
+import Fixtures from './pages/Fixtures';
+import Sponsors from './pages/Sponsors';
+import Legal from './pages/Legal';
+
+import { useWorld, GameState } from './contexts/WorldContext';
 import Login from './pages/Login';
 import ClubSelection from './pages/ClubSelection';
+import LoadingScreen from './components/LoadingScreen';
 
-const menuConfig = [
-    { name: "Main", links: [ {path: "/dashboard", label: "Dashboard"}, {path: "/inbox", label: "Inbox"}, {path: "/match", label: "Match Day"} ] },
-    { name: "Squad", links: [ {path: "/squad", label: "Squad"}, {path: "/tactics", label: "Tactics"}, {path: "/training", label: "Training"} ] },
-    { name: "Staff", links: [ {path: "/staff", label: "Staff Overview"} ] },
-    { name: "Transfers", links: [ {path: "/transfers", label: "Transfer Market"} ] },
-    { name: "Club", links: [ {path: "/history", label: "History"}, {path: "/finances", label: "Finances"} ] },
-    { name: "Competition", links: [ {path: "/league", label: "League Table"}, {path: "/clubs", label: "Club Directory"} ] },
-    { name: "World", links: [ {path: "/guilds", label: "Guilds"} ] },
+export type MenuConfig = {
+  name: string;
+  links: { path: string; label: string; element: React.ReactNode }[];
+}[];
+
+const menuConfig: MenuConfig = [
+  { name: 'Main', links: [{ path: '/dashboard', label: 'Dashboard', element: <Dashboard /> }, { path: '/inbox', label: 'Inbox', element: <Inbox /> }] },
+  { name: 'Squad', links: [{ path: '/squad', label: 'Players', element: <Squad /> }, { path: '/tactics', label: 'Tactics', element: <Tactics /> }, { path: '/training', label: 'Training', element: <Training /> }] },
+  { name: 'Staff', links: [{ path: '/staff', label: 'Club Staff', element: <Staff /> }] },
+  { name: 'Transfers', links: [{ path: '/transfers', label: 'Transfer Market', element: <Transfers /> }] },
+  { name: 'Club', links: [{ path: '/club/history', label: 'History', element: <ClubHistory /> }, { path: '/club/finances', label: 'Finances', element: <Finances /> }, { path: '/club/sponsors', label: 'Sponsors', element: <Sponsors /> }] },
+  { name: 'Competition', links: [{ path: '/league', label: 'League Table', element: <LeagueTable /> }, { path: '/fixtures', label: 'Fixtures', element: <Fixtures /> }] },
+  { name: 'World', links: [{ path: '/world/clubs', label: 'Club Directory', element: <ClubDirectory /> }, { path: '/world/guilds', label: 'Guilds', element: <Guilds /> }] },
+  { name: 'System', links: [{ path: '/legal', label: 'Legal', element: <Legal /> }] },
 ];
 
-export type MenuConfig = typeof menuConfig;
-
 const App: React.FC = () => {
-  const { loading, gameLoaded, isClubChosen } = useWorld();
+    const { gameState } = useWorld();
 
-  if (loading) {
-    return <LoadingScreen />;
-  }
+    if (gameState === GameState.LOADING) {
+        return <LoadingScreen />;
+    }
+    
+    if (gameState === GameState.LOGIN) {
+        return <Login />;
+    }
 
-  if (!gameLoaded) {
-    return <Login />;
-  }
+    if (gameState === GameState.CLUB_SELECTION) {
+        return <ClubSelection />;
+    }
 
-  if (!isClubChosen) {
-    return <ClubSelection />;
-  }
-
-  return (
-    <Router>
-      <div className="flex h-screen w-screen overflow-hidden">
-        <Sidebar menuConfig={menuConfig} />
-        <div className="flex-1 flex flex-col min-w-0">
-          <Topbar menuConfig={menuConfig} />
-          <main className="flex-1 p-4 overflow-y-auto">
-            <Routes>
-              <Route path="/" element={<Navigate to="/dashboard" />} />
-              <Route path="/dashboard" element={<Dashboard />} />
-              <Route path="/inbox" element={<Inbox />} />
-              <Route path="/match" element={<Match />} />
-
-              <Route path="/squad" element={<Squad />} />
-              <Route path="/tactics" element={<Tactics />} />
-              <Route path="/training" element={<Training />} />
-              
-              <Route path="/staff" element={<Staff />} />
-              <Route path="/finances" element={<Finances />} />
-              <Route path="/transfers" element={<Transfers />} />
-
-              <Route path="/league" element={<LeagueTable />} />
-              <Route path="/history" element={<ClubHistory />} />
-              
-              <Route path="/clubs" element={<ClubDirectory />} />
-              <Route path="/guilds" element={<Guilds />} />
-            </Routes>
-          </main>
-        </div>
-      </div>
-    </Router>
-  );
+    return (
+        <BrowserRouter>
+            <div className="flex h-screen bg-background text-text-primary font-sans">
+                <Sidebar menuConfig={menuConfig} />
+                <main className="flex-grow flex flex-col">
+                    <Topbar menuConfig={menuConfig} />
+                    <div className="flex-grow p-4 overflow-y-auto">
+                        <Routes>
+                            <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                            {menuConfig.flatMap(category =>
+                                category.links.map(link => (
+                                    <Route key={link.path} path={link.path} element={link.element} />
+                                ))
+                            )}
+                            {/* Special non-sidebar routes */}
+                            <Route path="/match" element={<Match />} />
+                        </Routes>
+                    </div>
+                </main>
+            </div>
+        </BrowserRouter>
+    );
 };
 
 export default App;

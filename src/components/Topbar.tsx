@@ -36,7 +36,12 @@ const CompetitionIcon = () => (
 );
 const WorldIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c1.35 0 2.664-.294 3.86-1.04M12 21c-1.35 0-2.664-.294-3.86-1.04M12 3a9.004 9.004 0 0 0-8.716 6.747M12 3a9.004 9.004 0 0 1 8.716 6.747M12 3c1.35 0 2.664.294 3.86 1.04M12 3c-1.35 0-2.664-.294-3.86 1.04M4.26 15.747A9.004 9.004 0 0 1 12 3c1.35 0 2.664.294 3.86 1.04M4.26 15.747A9.004 9.004 0 0 0 12 21c1.35 0 2.664.294 3.86-1.04M19.74 8.253A9.004 9.004 0 0 0 12 3c-1.35 0-2.664-.294-3.86 1.04M19.74 8.253A9.004 9.004 0 0 1 12 21c-1.35 0-2.664-.294-3.86-1.04M4.26 8.253A9.004 9.004 0 0 1 12 21c1.35 0 2.664.294 3.86-1.04M19.74 15.747A9.004 9.004 0 0 0 12 3c-1.35 0-2.664-.294-3.86 1.04" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M12 21a9.004 9.004 0 0 0 8.716-6.747M12 21a9.004 9.004 0 0 1-8.716-6.747M12 21c1.35 0 2.664-.294 3.86-1.04M12 21c-1.35 0-2.664-.294-3.86-1.04M12 3a9.004 9.004 0 0 0-8.716 6.747M12 3a9.004 9.004 0 0 1 8.716 6.747M12 3c1.35 0 2.664.294 3.86 1.04M12 3c-1.35 0-2.664-.294-3.86-1.04M4.26 15.747A9.004 9.004 0 0 1 12 3c1.35 0 2.664.294 3.86 1.04M4.26 15.747A9.004 9.004 0 0 0 12 21c1.35 0 2.664.294 3.86-1.04M19.74 8.253A9.004 9.004 0 0 0 12 3c-1.35 0-2.664-.294-3.86-1.04M19.74 8.253A9.004 9.004 0 0 1 12 21c-1.35 0-2.664-.294-3.86-1.04M4.26 8.253A9.004 9.004 0 0 1 12 21c1.35 0 2.664.294 3.86-1.04M19.74 15.747A9.004 9.004 0 0 0 12 3c-1.35 0-2.664-.294-3.86-1.04" />
+    </svg>
+);
+const SystemIcon = () => (
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
+        <path strokeLinecap="round" strokeLinejoin="round" d="M21.75 9v.906a2.25 2.25 0 0 1-1.183 1.981l-6.478 3.488M21.75 9V5.625A2.25 2.25 0 0 0 19.5 3.375l-7.5 4.125M21.75 9l-7.5 4.125M3.375 5.625c0-1.036.84-1.875 1.875-1.875h.375m13.5 0h.375c1.036 0 1.875.84 1.875 1.875v12.75c0 1.035-.84 1.875-1.875 1.875h-1.5a1.875 1.875 0 0 1-1.875-1.875v-1.5m-6.375-9.375c.621 0 1.125.504 1.125 1.125v6.375c0 .621-.504 1.125-1.125 1.125H9.375c-.621 0-1.125-.504-1.125-1.125v-6.375c0-.621.504-1.125 1.125-1.125h6.375Z" />
     </svg>
 );
 
@@ -48,6 +53,7 @@ const iconMap: { [key: string]: React.FC } = {
     "Club": ClubIcon,
     "Competition": CompetitionIcon,
     "World": WorldIcon,
+    "System": SystemIcon,
 };
 
 // --- Other Icons ---
@@ -70,9 +76,16 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
-    const { gameDate, advanceDay, managerClubId, findClubById } = useWorld();
+    const { gameDate, advanceDay, managerClubId, findClubById, isProcessing, workerReady } = useWorld();
     const club = findClubById(managerClubId);
     const location = useLocation();
+
+    const getButtonState = () => {
+        if (!workerReady) return { text: 'Loading...', disabled: true };
+        if (isProcessing) return { text: 'Processing...', disabled: true };
+        return { text: 'Advance', disabled: false };
+    };
+    const buttonState = getButtonState();
 
     return (
         <header className="flex-shrink-0 h-20 px-6 flex items-center justify-between glass-surface m-4 mb-0">
@@ -100,8 +113,8 @@ const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
                     <div className="font-bold text-text-emphasis text-sm">{club?.name}</div>
                     <div className="text-xs text-text-secondary">Season {gameDate.season}, Day {gameDate.day}</div>
                 </div>
-                <button onClick={advanceDay} className="button-primary">
-                    Advance
+                <button onClick={advanceDay} className="button-primary" disabled={buttonState.disabled}>
+                    {buttonState.text}
                 </button>
                  {/* Placeholder Icons */}
                 <div className="flex items-center gap-4 border-l border-border pl-6">
