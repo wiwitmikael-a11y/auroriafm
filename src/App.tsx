@@ -17,29 +17,34 @@ import ClubHistory from './pages/ClubHistory';
 import { useWorld } from './contexts/WorldContext';
 import LoadingScreen from './components/LoadingScreen';
 import Topbar from './components/Topbar';
-// FIX: Import the Login component to be used when the game is not loaded.
 import Login from './pages/Login';
+import ClubSelection from './pages/ClubSelection';
 
 const menuConfig = [
     { name: "Main", links: [ {path: "/dashboard", label: "Dashboard"}, {path: "/inbox", label: "Inbox"}, {path: "/match", label: "Match Day"} ] },
     { name: "Squad", links: [ {path: "/squad", label: "Squad"}, {path: "/tactics", label: "Tactics"}, {path: "/training", label: "Training"} ] },
-    { name: "Management", links: [ {path: "/staff", label: "Staff"}, {path: "/finances", label: "Finances"}, {path: "/transfers", label: "Transfers"} ] },
-    { name: "Competition", links: [ {path: "/league", label: "League Table"}, {path: "/history", label: "Club History"} ] },
-    { name: "World", links: [ {path: "/clubs", label: "Club Directory"}, {path: "/guilds", label: "Guilds"} ] },
+    { name: "Staff", links: [ {path: "/staff", label: "Staff Overview"} ] },
+    { name: "Transfers", links: [ {path: "/transfers", label: "Transfer Market"} ] },
+    { name: "Club", links: [ {path: "/history", label: "History"}, {path: "/finances", label: "Finances"} ] },
+    { name: "Competition", links: [ {path: "/league", label: "League Table"}, {path: "/clubs", label: "Club Directory"} ] },
+    { name: "World", links: [ {path: "/guilds", label: "Guilds"} ] },
 ];
 
 export type MenuConfig = typeof menuConfig;
 
 const App: React.FC = () => {
-  const { loading, gameLoaded } = useWorld();
+  const { loading, gameLoaded, isClubChosen } = useWorld();
 
-  // FIX: Updated rendering logic to show LoadingScreen only when loading, and Login page if game is not yet loaded.
   if (loading) {
     return <LoadingScreen />;
   }
 
   if (!gameLoaded) {
     return <Login />;
+  }
+
+  if (!isClubChosen) {
+    return <ClubSelection />;
   }
 
   return (

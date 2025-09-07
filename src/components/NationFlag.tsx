@@ -23,6 +23,10 @@ const NationFlag: React.FC<NationFlagProps> = ({ nationId, className = "w-6 h-6"
         return { background: 'radial-gradient(circle, #00BFFF 30%, #483D8B 30%)' };
       case 'grimmr':
         return { background: 'linear-gradient(45deg, #B22222 50%, #1c1c1c 50%)' };
+      case 'solis':
+        return { background: 'linear-gradient(to bottom, #E2B14B 70%, #4A2A0A 70%)' };
+      case 'veridia':
+        return { background: 'repeating-linear-gradient(45deg, #228B22, #228B22 10px, #8B4513 10px, #8B4513 20px)' };
       default:
         return { background: '#333' };
     }

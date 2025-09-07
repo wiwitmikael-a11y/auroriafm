@@ -1,4 +1,4 @@
-export type Position = 'GK' | 'DEF' | 'MID' | 'ATT' | 'STR';
+export type Position = 'GK' | 'DF' | 'MF' | 'FW';
 export type Rarity = 'Common' | 'Rare' | 'Epic' | 'Legend';
 export type Morale = 'Low' | 'Fair' | 'Good' | 'High' | 'Very High' | 'Poor';
 export type PreferredFoot = 'Right' | 'Left';
@@ -66,6 +66,7 @@ export interface Player {
     age: number;
     nation_id: string;
     position: Position;
+    playstyle: string; // NEW: Procedurally generated archetype
     rarity: Rarity;
     value: number;
     contract: Contract;
@@ -94,11 +95,13 @@ export interface TacticalPlayer extends Player {
 }
 
 export type TacticMentality = 'Very Defensive' | 'Defensive' | 'Balanced' | 'Attacking' | 'Very Attacking';
+export type FormationShape = '4-4-2' | '4-3-3' | '3-5-2' | '5-3-2';
 
 export interface TacticSettings {
     mentality: TacticMentality;
     pressing_intensity: number;
     defensive_line_height: number;
+    formation: FormationShape;
 }
 
 export interface Club {
@@ -202,7 +205,7 @@ export interface GuildAction extends ScenarioAction {}
 
 export interface InboxMessage {
     id: string;
-    type: 'System' | 'Scouting' | 'Guild' | 'Staff' | 'Transfer' | 'Media' | 'GuildRequest' | 'Youth';
+    type: 'System' | 'Scouting' | 'Guild' | 'Staff' | 'Transfer' | 'Media' | 'GuildRequest' | 'Youth' | 'Board';
     sender: string;
     subject: string;
     date: string;
@@ -238,7 +241,6 @@ export interface Staff {
 export interface PlayerRole {
     name: string;
     description: string;
-
     position: Position[];
     key_attributes: (keyof PlayerAttributes)[];
 }

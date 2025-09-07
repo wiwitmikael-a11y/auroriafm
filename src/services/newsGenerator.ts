@@ -2,6 +2,18 @@ import { Player, Club, MatchResult, GameDate, InboxMessage } from '../types';
 
 let messageIdCounter = 100;
 
+export const generateBoardWelcomeMessage = (club: Club, date: GameDate): InboxMessage => {
+    return {
+        id: `msg_welcome_${club.id}`,
+        type: 'Board',
+        sender: `The Board of ${club.name}`,
+        subject: `Welcome to ${club.name}!`,
+        date: `Season ${date.season}, Day ${date.day}`,
+        body: `Manager,\n\nOn behalf of the entire board, we are delighted to welcome you to ${club.stadium}.\n\nWe have the utmost confidence that your leadership will guide us to a new era of success. The expectations are high, but we believe you are the right person to lead "${club.nickname}" to glory.\n\nThe staff and players await your instructions. Good luck.\n\n- The Board`,
+        isRead: false,
+    };
+};
+
 export const generateMatchReportMessage = (result: MatchResult, clubs: Club[], date: GameDate): InboxMessage => {
     const homeTeam = clubs.find(c => c.id === result.home_team_id)!;
     const awayTeam = clubs.find(c => c.id === result.away_team_id)!;

@@ -242,6 +242,18 @@ table tbody tr.highlighted-row {
   font-weight: bold;
 }
 
+/* Glow effect for selected player name */
+.selected-player-glow {
+  color: var(--color-accent);
+  text-shadow: 0 0 8px var(--color-accent);
+}
+
+/* Glow effect for selected player CARD */
+.selected-player-card-glow {
+    border-color: var(--color-accent) !important;
+    box-shadow: 0 0 15px var(--color-accent);
+}
+
 /* Simple Animation */
 @keyframes fade-in {
     from { opacity: 0; transform: translateY(10px); }
@@ -249,6 +261,10 @@ table tbody tr.highlighted-row {
 }
 .animate-fade-in {
     animation: fade-in 0.5s ease-out forwards;
+}
+
+.attribute-label {
+    text-transform: capitalize;
 }
 
 /* Recreating Tailwind-like utility classes used in the project */
@@ -262,6 +278,7 @@ table tbody tr.highlighted-row {
 .items-center { align-items: center; }
 .justify-center { justify-content: center; }
 .justify-between { justify-content: space-between; }
+.gap-1 { gap: 0.25rem; }
 .gap-2 { gap: 0.5rem; }
 .gap-3 { gap: 0.75rem; }
 .gap-4 { gap: 1rem; }
@@ -269,35 +286,60 @@ table tbody tr.highlighted-row {
 .p-2 { padding: 0.5rem; }
 .p-4 { padding: 1rem; }
 .p-6 { padding: 1.5rem; }
+.px-2 { padding-left: 0.5rem; padding-right: 0.5rem; }
 .m-4 { margin: 1rem; }
 .m-6 { margin: 1.5rem; }
 .mb-0 { margin-bottom: 0; }
+.mt-1 { margin-top: 0.25rem; }
+.mt-2 { margin-top: 0.5rem; }
+.mt-4 { margin-top: 1rem; }
+.mt-8 { margin-top: 2rem; }
 .overflow-hidden { overflow: hidden; }
 .overflow-y-auto { overflow-y: auto; }
 .min-w-0 { min-width: 0; }
 .min-h-0 { min-height: 0; }
+.text-xs { font-size: 0.75rem; }
+.text-sm { font-size: 0.875rem; }
 .text-lg { font-size: 1.125rem; }
+.text-xl { font-size: 1.25rem; }
+.text-2xl { font-size: 1.5rem; }
+.text-3xl { font-size: 1.875rem; }
 .text-4xl { font-size: 2.25rem; }
+.font-bold { font-weight: 700; }
 .font-black { font-weight: 900; }
 .font-display { font-family: var(--font-display); }
 .uppercase { text-transform: uppercase; }
 .tracking-widest { letter-spacing: .1em; }
 .text-text-emphasis { color: var(--color-text-emphasis); }
 .text-text-secondary { color: var(--color-text-secondary); }
+.mb-2 { margin-bottom: 0.5rem; }
+.mb-4 { margin-bottom: 1rem; }
 .mb-8 { margin-bottom: 2rem; }
 .grid { display: grid; }
 .grid-cols-1 { grid-template-columns: repeat(1, minmax(0, 1fr)); }
+.grid-cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid-cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid-cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.w-full { width: 100%; }
 .w-1\/3 { width: 33.333333%; }
 .w-2\/3 { width: 66.666667%; }
+.w-1\/4 { width: 25%; }
+.w-3\/4 { width: 75%; }
 .h-full { height: 100%; }
 .mb-6 { margin-bottom: 1.5rem; }
 .pr-2 { padding-right: 0.5rem; }
+.space-y-2 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.5rem; }
 .space-y-3 > :not([hidden]) ~ :not([hidden]) { margin-top: 0.75rem; }
+.space-y-4 > :not([hidden]) ~ :not([hidden]) { margin-top: 1rem; }
+.text-center { text-align: center; }
 
 /* Responsive Grid Utilities */
 @media (min-width: 768px) {
   .md\:grid-cols-2 {
     grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+   .md\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }
 
@@ -308,10 +350,16 @@ table tbody tr.highlighted-row {
   .lg\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
+   .lg\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
 }
 
 @media (min-width: 1280px) {
   .xl\:grid-cols-3 {
     grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+  .xl\:grid-cols-4 {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
   }
 }

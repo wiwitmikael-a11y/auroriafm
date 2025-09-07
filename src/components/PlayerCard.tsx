@@ -20,14 +20,14 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, onSelectPlayer, isSelec
     <div
       onClick={() => onSelectPlayer(player.id)}
       className={`flex items-center p-2 rounded-lg cursor-pointer transition-all duration-200 border glass-surface ${
-        isSelected ? 'border-accent shadow-[0_0_15px_var(--color-accent)]' : 'border-transparent hover:border-accent/50'
+        isSelected ? 'selected-player-card-glow' : 'border-transparent hover:border-accent/50'
       }`}
     >
       <PlayerPortrait player={player} className="w-12 h-14 mr-4 flex-shrink-0" />
       <div className="flex-grow overflow-hidden">
         <div className="flex items-center gap-2">
            <NationFlag nationId={player.nation_id} />
-           <p className="font-bold text-md truncate text-text-emphasis">{player.name.first} {player.name.last}</p>
+           <p className={`font-bold text-md truncate text-text-emphasis ${isSelected ? 'selected-player-glow' : ''}`}>{player.name.first} {player.name.last}</p>
         </div>
         <p className="text-xs text-text-secondary">{player.age} y/o | {player.position} | {player.squad_status}</p>
       </div>

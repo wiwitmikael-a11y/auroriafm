@@ -16,7 +16,7 @@ const AttributeGroup: React.FC<{ title: string; attributes: Partial<PlayerAttrib
         <div className="grid grid-cols-2 gap-x-4 gap-y-1 text-xs">
             {Object.entries(attributes).map(([key, value]) => (
                 <div key={key} className="flex justify-between">
-                    <span className="capitalize text-text-secondary">{key.replace(/_/g, ' ')}</span>
+                    <span className="uppercase text-text-secondary">{key.replace(/_/g, ' ')}</span>
                     <span className="font-bold text-text-emphasis">{value}</span>
                 </div>
             ))}
@@ -28,8 +28,8 @@ const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer })
     const [isModalOpen, setIsModalOpen] = useState(false);
     
     const physicalAttrs = { speed: player.attributes.speed, stamina: player.attributes.stamina, strength: player.attributes.strength, aggression: player.attributes.aggression };
-    const mentalAttrs = { composure: player.attributes.composure, vision: player.attributes.vision, consistency: player.attributes.consistency, important_matches: player.attributes.important_matches };
     const technicalAttrs = { shooting: player.attributes.shooting, dribbling: player.attributes.dribbling, passing: player.attributes.passing, tackling: player.attributes.tackling };
+    const mentalAttrs = { composure: player.attributes.composure, vision: player.attributes.vision, consistency: player.attributes.consistency, important_matches: player.attributes.important_matches };
     const magicalAttrs = { arcane_dribble: player.attributes.arcane_dribble, elemental_shot: player.attributes.elemental_shot, temporal_flux: player.attributes.temporal_flux };
 
     const radarData = [
@@ -54,6 +54,7 @@ const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer })
                     <h1 className="text-2xl font-display font-black text-text-emphasis">{player.name.first} {player.name.last}</h1>
                 </div>
                 {player.name.alias && <p className="text-md text-accent-secondary -mt-1">"{player.name.alias}"</p>}
+                 <p className="text-sm font-bold text-accent mt-1">{player.playstyle}</p>
                 <p className="text-sm text-text-secondary mt-1">{player.age} y/o | {player.position} | {player.preferred_foot} Foot | {player.squad_status}</p>
                 <p className="text-sm text-text-secondary">Value: ${player.value.toLocaleString()}</p>
                  <button onClick={() => setIsModalOpen(true)} className="mt-2 text-xs text-accent hover:underline">
@@ -70,8 +71,8 @@ const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer })
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
             <div className="lg:col-span-2 grid grid-cols-2 gap-4">
                 <AttributeGroup title="Physical" attributes={physicalAttrs} player={player}/>
-                <AttributeGroup title="Mental" attributes={mentalAttrs} player={player}/>
                 <AttributeGroup title="Technical" attributes={technicalAttrs} player={player}/>
+                <AttributeGroup title="Mental" attributes={mentalAttrs} player={player}/>
                 <AttributeGroup title="Magical" attributes={magicalAttrs} player={player}/>
             </div>
             <div className="flex flex-col items-center justify-center glass-surface p-2 rounded-md">

@@ -1,5 +1,5 @@
 import React, { createContext, useState, useContext, ReactNode, useCallback } from 'react';
-import { generateCrestUrl } from '../services/geminiService';
+import { ACC } from '../engine/ACC';
 
 interface CrestContextType {
   getCrest: (tags: string, palette: string[]) => Promise<string>;
@@ -16,7 +16,7 @@ export const CrestProvider: React.FC<{ children: ReactNode }> = ({ children }) =
       return crestCache[cacheKey];
     }
 
-    const url = await generateCrestUrl(tags, palette);
+    const url = ACC.generateProceduralCrest(tags, palette);
     setCrestCache(prev => ({ ...prev, [cacheKey]: url }));
     return url;
   }, [crestCache]);

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Player } from '../types';
-import { generatePlayerNickname } from '../services/geminiService';
+import { proceduralService } from '../services/proceduralService';
 
 interface NicknameModalProps {
   player: Player;
@@ -15,9 +15,10 @@ const NicknameModal: React.FC<NicknameModalProps> = ({ player, onUpdatePlayer, o
 
   useEffect(() => {
     setIsLoading(true);
-    generatePlayerNickname(player)
-      .then(setNicknames)
-      .finally(() => setIsLoading(false));
+    // Use the procedural service exclusively
+    const generatedNicknames = proceduralService.generateNickname(player);
+    setNicknames(generatedNicknames);
+    setIsLoading(false);
   }, [player]);
 
   const handleApplyNickname = () => {

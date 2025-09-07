@@ -1,4 +1,5 @@
 export const TRAITS: { [key: string]: { name: string, description: string } } = {
+  // Original Traits
   FINESSE_SHOT: { name: 'Finesse Shot', description: 'Excels at placing shots accurately, sacrificing power for precision.' },
   STAR_PLAYER: { name: 'Star Player', description: 'A high-profile player who can turn the tide of a match but expects to be treated as such.' },
   TRIES_TRICKS: { name: 'Tries Tricks', description: 'Often attempts flair moves like step-overs and feints to beat opponents.' },
@@ -15,4 +16,12 @@ export const TRAITS: { [key: string]: { name: string, description: string } } = 
   MAGICAL_MAESTRO: { name: 'Magical Maestro', description: 'A master of Arcane Arts, weaving spells with the ball at their feet.' },
   NO_NONSENSE: { name: 'No-Nonsense Defender', description: 'Prefers simple, effective clearances over playing out from the back.' },
   BRUISER: { name: 'Bruiser', description: 'Uses immense physical strength to dominate opponents in challenges.' },
+
+  // New Lore-Friendly Traits
+  STEAM_POWERED_LUNGS: { name: 'Steam-Powered Lungs', description: 'Possesses unnatural stamina, allowing them to maintain high intensity for longer.'},
+  CLOCKWORK_PRECISION: { name: 'Clockwork Precision', description: 'Executes passes and shots with machinelike consistency and accuracy.'},
+  AETHER_SENSITIVE: { name: 'Aether-Sensitive', description: 'Intuitively reads the flow of magic on the pitch, anticipating arcane movements.'},
+  SAND_STRIDER: { name: 'Sand Strider', description: 'Incredibly agile and light-footed, seems to glide across the pitch surface.'},
+  NATURAL_CAMOUFLAGE: { name: 'Natural Camouflage', description: 'Adept at finding pockets of space, seemingly vanishing from defenders\' sight.'},
+  BERSERKER_RAGE: { name: 'Berserker Rage', description: 'Becomes more aggressive and physically imposing when the team is losing.'}
 };

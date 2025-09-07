@@ -3,7 +3,7 @@ import { useWorld } from '../contexts/WorldContext';
 import { InboxMessage } from '../types';
 
 const Inbox: React.FC = () => {
-    const { inboxMessages, markMessageAsRead } = useWorld();
+    const { inboxMessages, markMessageAsRead, handleGuildAction } = useWorld();
     const [selectedMessage, setSelectedMessage] = useState<InboxMessage | null>(inboxMessages.find(m => !m.isRead) || inboxMessages[0] || null);
 
     const handleSelectMessage = (message: InboxMessage) => {
@@ -44,10 +44,14 @@ const Inbox: React.FC = () => {
                         <div className="flex-grow overflow-y-auto whitespace-pre-wrap text-text-primary pr-2">
                             {selectedMessage.body}
                         </div>
-                        {selectedMessage.actions && (
+                        {selectedMessage.actions && selectedMessage.guildId && (
                             <div className="mt-4 pt-4 border-t-2 border-border flex gap-4">
                                 {selectedMessage.actions.map((action, index) => (
-                                    <button key={index} className="button-primary">
+                                    <button 
+                                      key={index} 
+                                      className="button-primary"
+                                      onClick={() => handleGuildAction(selectedMessage.guildId!, action)}
+                                    >
                                         {action.label}
                                     </button>
                                 ))}
