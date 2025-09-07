@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Player } from '../types';
-import { usePortraits } from '../contexts/PortraitContext';
+import { useWorld } from '../contexts/WorldContext';
+import { assetManager } from '../services/assetManager';
 
 interface PlayerPortraitProps {
     player: Player;
@@ -8,22 +9,27 @@ interface PlayerPortraitProps {
 }
 
 const PlayerPortrait: React.FC<PlayerPortraitProps> = ({ player, className = "w-12 h-14" }) => {
-    const { getPortraitUrl } = usePortraits();
+    const { findClubById } = useWorld();
     const [portraitUrl, setPortraitUrl] = useState('');
+    const club = findClubById(player.club_id);
 
     useEffect(() => {
-        getPortraitUrl(player).then(setPortraitUrl);
-    }, [getPortraitUrl, player]);
+        if (club) {
+            const url = assetManager.generateModularPortrait(player, club);
+            setPortraitUrl(url);
+        }
+    }, [player, club]);
 
     if (!portraitUrl) {
-        return <div className={`${className} bg-slate-900/50 animate-pulse`} style={{ clipPath: 'polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%)' }} />;
+        return <div className={`${className} bg-slate-900/50 animate-pulse rounded-lg`} />;
     }
 
     return (
         <img 
             src={portraitUrl} 
             alt={`${player.name.first} ${player.name.last} portrait`} 
-            className={className} 
+            className={`${className} rounded-lg`}
+            style={{ imageRendering: 'pixelated' }}
         />
     );
 };

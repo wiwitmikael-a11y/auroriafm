@@ -1,6 +1,7 @@
 import { Player, Club, MatchEvent, Guild, GuildAction, Nation } from '../types';
 import { ACC } from '../engine/ACC';
 import { NATIONS } from '../data/nations';
+import { PLAYSTYLES } from '../data/playstyles';
 
 // This service acts as a public-facing API for the Aetherium Chronicle Core (ACC),
 // ensuring that other parts of the application don't need to interact with the
@@ -8,8 +9,10 @@ import { NATIONS } from '../data/nations';
 
 const generateNickname = (player: Player): string[] => {
     const randomNation: Nation = ACC.prng.getRandom(NATIONS);
+    // FIX: The player object has `playstyle_id`, not `playstyle`. Look up the playstyle name from PLAYSTYLES.
+    const playstyle = PLAYSTYLES.find(p => p.id === player.playstyle_id);
     const templates = [
-        `The ${player.playstyle}`,
+        `The ${playstyle?.name || 'Versatile'}`,
         `${player.name.last} the Great`,
         `The ${randomNation.adjective} Comet`,
         `"The Cog" ${player.name.last}`,

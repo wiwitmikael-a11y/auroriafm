@@ -2,12 +2,14 @@ import { GoogleGenAI } from "@google/genai";
 import { Player } from '../types';
 import { NATIONS } from '../data/nations';
 import { TRAITS } from "../data/traits";
+import { PLAYSTYLES } from "../data/playstyles";
 
 const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
 async function generatePlayerLore(player: Player): Promise<string> {
     const nation = NATIONS.find(n => n.id === player.nation_id);
     const traitDescriptions = player.traits.map(t => TRAITS[t]?.name || t).join(', ');
+    const playstyle = PLAYSTYLES.find(p => p.id === player.playstyle_id);
 
     const prompt = `
         Generate a short, flavorful backstory for a fantasy football player in a world of steampunk and magic.
@@ -17,7 +19,7 @@ async function generatePlayerLore(player: Player): Promise<string> {
         - Name: ${player.name.first} ${player.name.last}
         - Nation: ${nation?.name} (${nation?.adjective})
         - Position: ${player.position}
-        - Playstyle: ${player.playstyle}
+        - Playstyle: ${playstyle?.name || 'Unknown'}
         - Key Traits: ${traitDescriptions || 'None notable'}
         - Rarity/Reputation: ${player.rarity}
 

@@ -1,5 +1,6 @@
 import React from 'react';
 import { useWorld } from '../contexts/WorldContext';
+import { SPONSORS } from '../data/sponsors';
 
 const Finances: React.FC = () => {
     const { findClubById, managerClubId } = useWorld();
@@ -7,22 +8,30 @@ const Finances: React.FC = () => {
 
     if (!club) return null;
     
-    // Mock data for more detail
-    const income = {
-        gate_receipts: 250000,
-        sponsorship: 150000,
-        merchandise: 75000,
-        prize_money: 50000,
-    };
+    // Mock data for expenditure
     const expenditure = {
         player_wages: 450000,
         staff_wages: 80000,
         stadium_maintenance: 40000,
         travel_costs: 25000,
     };
+    
+    const weeklySponsorIncome = club.sponsor_deals.reduce((sum, deal) => sum + deal.weekly_income, 0);
+    const monthlySponsorIncome = weeklySponsorIncome * 4;
+
+    const income = {
+        gate_receipts: 250000,
+        sponsorship: monthlySponsorIncome,
+        merchandise: 75000,
+        prize_money: 50000,
+    };
+    
     const totalIncome = Object.values(income).reduce((a, b) => a + b, 0);
     const totalExpenditure = Object.values(expenditure).reduce((a, b) => a + b, 0);
     const netProfit = totalIncome - totalExpenditure;
+    
+    const transferBudget = club.transfer_budget;
+    const wageBudgetRemaining = club.wage_budget; // Assuming this is weekly remaining
 
     return (
         <div className="animate-fade-in">
@@ -41,11 +50,11 @@ const Finances: React.FC = () => {
                         </div>
                         <div>
                             <p className="text-sm text-text-secondary">Transfer Budget Remaining</p>
-                            <p className="text-3xl font-bold text-text-emphasis">${club.transfer_budget.toLocaleString()}</p>
+                            <p className="text-3xl font-bold text-text-emphasis">${transferBudget.toLocaleString()}</p>
                         </div>
                         <div>
-                            <p className="text-sm text-text-secondary">Wage Budget Remaining</p>
-                            <p className="text-3xl font-bold text-text-emphasis">${club.wage_budget.toLocaleString()}</p>
+                            <p className="text-sm text-text-secondary">Wage Budget Remaining (Weekly)</p>
+                            <p className="text-3xl font-bold text-text-emphasis">${wageBudgetRemaining.toLocaleString()}</p>
                         </div>
                          <div>
                             <p className="text-sm text-text-secondary">Financial Status</p>

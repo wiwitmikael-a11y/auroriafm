@@ -1,5 +1,5 @@
-import React from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import React, { useEffect } from 'react';
+import { HashRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 
 import Sidebar from './components/Sidebar';
 import Topbar from './components/Topbar';
@@ -41,43 +41,45 @@ const menuConfig: MenuConfig = [
   { name: 'System', links: [{ path: '/legal', label: 'Legal', element: <Legal /> }] },
 ];
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
     const { gameState } = useWorld();
+    const navigate = useNavigate();
 
-    if (gameState === GameState.LOADING) {
-        return <LoadingScreen />;
-    }
-    
-    if (gameState === GameState.LOGIN) {
-        return <Login />;
-    }
+    useEffect(() => {
+        if (gameState === GameState.LIVE_MATCH) {
+            navigate('/match');
+        }
+    }, [gameState, navigate]);
 
-    if (gameState === GameState.CLUB_SELECTION) {
-        return <ClubSelection />;
-    }
+    if (gameState === GameState.LOADING) return <LoadingScreen />;
+    if (gameState === GameState.LOGIN) return <Login />;
+    if (gameState === GameState.CLUB_SELECTION) return <ClubSelection />;
 
     return (
-        <BrowserRouter>
-            <div className="flex h-screen bg-background text-text-primary font-sans">
-                <Sidebar menuConfig={menuConfig} />
-                <main className="flex-grow flex flex-col">
-                    <Topbar menuConfig={menuConfig} />
-                    <div className="flex-grow p-4 overflow-y-auto">
-                        <Routes>
-                            <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                            {menuConfig.flatMap(category =>
-                                category.links.map(link => (
-                                    <Route key={link.path} path={link.path} element={link.element} />
-                                ))
-                            )}
-                            {/* Special non-sidebar routes */}
-                            <Route path="/match" element={<Match />} />
-                        </Routes>
-                    </div>
-                </main>
-            </div>
-        </BrowserRouter>
+        <div className="flex h-screen bg-background text-text-primary font-sans">
+            <Sidebar menuConfig={menuConfig} />
+            <main className="flex-grow flex flex-col">
+                <Topbar menuConfig={menuConfig} />
+                <div className="flex-grow p-4 overflow-y-auto">
+                    <Routes>
+                        <Route path="/" element={<Navigate to="/dashboard" replace />} />
+                        {menuConfig.flatMap(category =>
+                            category.links.map(link => (
+                                <Route key={link.path} path={link.path} element={link.element} />
+                            ))
+                        )}
+                        <Route path="/match" element={<Match />} />
+                    </Routes>
+                </div>
+            </main>
+        </div>
     );
 };
+
+const App: React.FC = () => (
+    <HashRouter>
+        <AppContent />
+    </HashRouter>
+);
 
 export default App;

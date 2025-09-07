@@ -1,17 +1,19 @@
 import React, { createContext, useContext, ReactNode, useCallback } from 'react';
 import { assetManager } from '../services/assetManager';
+import { useWorld } from './WorldContext';
+import { Club } from '../types';
 
 interface CrestContextType {
-  getCrest: (tags: string, palette: string[]) => Promise<string>;
+  getCrest: (club: Club) => string;
 }
 
 const CrestContext = createContext<CrestContextType | undefined>(undefined);
 
 export const CrestProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
 
-  const getCrest = useCallback(async (tags: string, palette: string[]): Promise<string> => {
+  const getCrest = useCallback((club: Club): string => {
     // Delegate crest generation and caching to the central asset manager
-    return assetManager.generateCrest(tags, palette);
+    return assetManager.generateCrest(club);
   }, []);
 
   return (

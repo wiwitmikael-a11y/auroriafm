@@ -20,7 +20,7 @@ const Login: React.FC = () => {
   return (
     <div className="h-screen w-screen flex flex-col items-center justify-center p-4">
       <div className="text-center mb-8">
-        <h1 className="text-6xl font-black font-display uppercase tracking-widest text-text-emphasis" style={{textShadow: '0 0 20px var(--color-accent)'}}>
+        <h1 className="text-4xl md:text-6xl font-black font-display uppercase tracking-widest text-text-emphasis" style={{textShadow: '0 0 20px var(--color-accent)'}}>
             Aetherium Chronicle
         </h1>
         <p className="text-lg text-text-secondary font-display" style={{textShadow: '0 0 10px var(--color-accent-secondary)'}}>
@@ -30,7 +30,7 @@ const Login: React.FC = () => {
 
       <form 
         onSubmit={handleStartGame}
-        className="glass-surface p-8 rounded-xl w-full max-w-md animate-fade-in"
+        className="glass-surface p-8 rounded-xl w-full max-w-xs animate-fade-in"
       >
         <div className="space-y-6">
           <div>

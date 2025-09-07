@@ -2,6 +2,7 @@ import React from 'react';
 import { Player } from '../types';
 import PlayerPortrait from './PlayerPortrait';
 import NationFlag from './NationFlag';
+import StarRating from './StarRating';
 
 interface PlayerCardProps {
   player: Player;
@@ -23,7 +24,9 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, onSelectPlayer, isSelec
         isSelected ? 'selected-player-card-glow' : 'border-transparent hover:border-accent/50'
       }`}
     >
-      <PlayerPortrait player={player} className="w-12 h-14 mr-4 flex-shrink-0" />
+      <div className="flex-shrink-0 w-16 h-16 flex items-center justify-center mr-3">
+        <PlayerPortrait player={player} className="w-full h-full object-contain" />
+      </div>
       <div className="flex-grow overflow-hidden">
         <div className="flex items-center gap-2">
            <NationFlag nationId={player.nation_id} />
@@ -31,9 +34,9 @@ const PlayerCard: React.FC<PlayerCardProps> = ({ player, onSelectPlayer, isSelec
         </div>
         <p className="text-xs text-text-secondary">{player.age} y/o | {player.position} | {player.squad_status}</p>
       </div>
-      <div className={`flex-shrink-0 ml-4 text-center border-l-2 pl-4 ${rarityColor}`}>
-        <p className="font-display font-black text-3xl text-text-emphasis">{player.current_ability}</p>
-        <p className={`text-xs font-bold ${
+      <div className={`flex-shrink-0 ml-4 pl-4`}>
+         <StarRating currentAbility={player.current_ability} potentialAbility={player.potential_ability} />
+         <p className={`text-xs font-bold text-center mt-1 ${
             player.rarity === 'Legend' ? 'text-amber-400' : 
             player.rarity === 'Epic' ? 'text-purple-400' : 
             player.rarity === 'Rare' ? 'text-blue-400' : 

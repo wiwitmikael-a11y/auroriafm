@@ -1,4 +1,4 @@
-import { Player, Club, MatchResult, GameDate, InboxMessage } from '../types';
+import { Player, Club, MatchResult, GameDate, InboxMessage, Staff } from '../types';
 
 let messageIdCounter = 100;
 
@@ -13,6 +13,20 @@ export const generateBoardWelcomeMessage = (club: Club, date: GameDate): InboxMe
         isRead: false,
     };
 };
+
+export const generateAssistantWelcomeMessage = (club: Club, date: GameDate, managerName: string, assistant?: Staff): InboxMessage => {
+    const assistantName = assistant?.name || 'Your Assistant Manager';
+    return {
+        id: `msg_assistant_welcome_${club.id}`,
+        type: 'Assistant',
+        sender: assistantName,
+        subject: `First Day at the Club`,
+        date: `Season ${date.season}, Day ${date.day}`,
+        body: `Gaffer ${managerName},\n\nWelcome to the club. The lads are eager to get started under your leadership. I've prepared the squad report and tactical overview for your review.\n\nI'm here to help with anything you need, from training schedules to opposition analysis. Just say the word.\n\nLet's get to work.\n\n- ${assistantName}`,
+        isRead: false,
+    };
+}
+
 
 export const generateMatchReportMessage = (result: MatchResult, clubs: Club[], date: GameDate): InboxMessage => {
     const homeTeam = clubs.find(c => c.id === result.home_team_id)!;
@@ -29,8 +43,7 @@ export const generateMatchReportMessage = (result: MatchResult, clubs: Club[], d
         body += `The teams couldn't be separated, sharing the points in a tense draw.`;
     }
     
-    // Find goalscorers
-    const goalScorers = result.events.filter(e => e.type === 'Goal').map(e => e.player).join(', ');
+    const goalScorers = result.events.filter(e => e.type === 'Goal').map(e => e.player).filter(Boolean).join(', ');
     if (goalScorers) {
         body += `\n\nGoalscorers: ${goalScorers}.`;
     }
@@ -46,9 +59,42 @@ export const generateMatchReportMessage = (result: MatchResult, clubs: Club[], d
     };
 };
 
-export const generateScoutingReportMessage = (player: Player, date: GameDate): InboxMessage => {
+export const generateMatchdaySummaryMessage = (results: MatchResult[], clubs: Club[], date: GameDate): InboxMessage => {
+    let body = `Here are the results from today's action in The Great Game:\n\n`;
+    results.forEach(res => {
+        const home = clubs.find(c => c.id === res.home_team_id)?.short_name;
+        const away = clubs.find(c => c.id === res.away_team_id)?.short_name;
+        body += `${home} ${res.home_score} - ${res.away_score} ${away}\n`;
+    });
+
+    const upset = results.find(res => {
+        const homeClub = clubs.find(c => c.id === res.home_team_id)!;
+        const awayClub = clubs.find(c => c.id === res.away_team_id)!;
+        const homeRating = homeClub.training_facilities + homeClub.youth_facilities;
+        const awayRating = awayClub.training_facilities + awayClub.youth_facilities;
+        return (res.home_score < res.away_score && homeRating > awayRating + 2) || (res.home_score > res.away_score && awayRating > homeRating + 2);
+    });
+
+    if (upset) {
+        const winner = upset.home_score > upset.away_score ? clubs.find(c => c.id === upset.home_team_id)! : clubs.find(c => c.id === upset.away_team_id)!;
+        body += `\nIn the shock of the day, ${winner.name} pulled off a surprising victory.`;
+    }
+
+     return {
+        id: `msg${messageIdCounter++}`,
+        type: 'Media',
+        sender: 'Aurorian Sports Network',
+        subject: `League Results - Day ${date.day}`,
+        date: `Season ${date.season}, Day ${date.day}`,
+        body,
+        isRead: false,
+    };
+};
+
+
+export const generateScoutingReportMessage = (player: Player, date: GameDate, reportText: string): InboxMessage => {
     const subject = `Scouting Report: ${player.name.first} ${player.name.last}`;
-    let body = `Gaffer,\n\nThe full report on ${player.name.first} ${player.name.last} is in. We now have a complete picture of his abilities.\n\nOur assessment concludes his current ability is a solid ${player.current_ability}, and we believe he has the potential to reach a rating of ${player.potential_ability}.\n\nHis key attributes appear to be his high ${Object.keys(player.attributes).reduce((a, b) => player.attributes[a as keyof typeof player.attributes] > player.attributes[b as keyof typeof player.attributes] ? a : b).replace(/_/g, ' ')}.\n\nAll his details in the player profile are now fully updated.\n\n- Chief Scout`;
+    let body = `Gaffer,\n\nThe full report on ${player.name.first} ${player.name.last} is in. We now have a complete picture of his abilities.\n\n--- SCOUT'S SUMMARY ---\n${reportText}\n\nAll his details in the player profile are now fully updated.\n\n- Chief Scout`;
 
     return {
         id: `msg${messageIdCounter++}`,
@@ -77,18 +123,45 @@ export const generateRivalryHypeMessage = (homeTeam: Club, awayTeam: Club, date:
 };
 
 export const generateYouthIntakeMessage = (club: Club, newPlayers: Player[], date: GameDate): InboxMessage => {
+     if (newPlayers.length === 0) {
+        return {
+            id: `msg_youth_${club.id}_${date.day}`,
+            type: 'Youth',
+            sender: 'Head of Youth Development',
+            subject: 'Disappointing Youth Intake',
+            date: `Season ${date.season}, Day ${date.day}`,
+            body: `Gaffer,\n\nUnfortunately, this year's crop of young talent has been underwhelming. We have not signed any new players to the academy this season.\n\nWe must hope for a better intake next year.`,
+            isRead: false,
+        };
+    }
+
     const bestPlayer = [...newPlayers].sort((a,b) => b.potential_ability - a.potential_ability)[0];
     const subject = `Youth Intake Day at ${club.name}!`;
     let body = `Our Head of Youth Development reports that this season's crop of young talent has arrived at the club.\n\nA total of ${newPlayers.length} new players have been signed to youth contracts.`;
     if(bestPlayer) {
-        body += `\n\nThe standout prospect appears to be ${bestPlayer.name.first} ${bestPlayer.name.last}, a promising ${bestPlayer.position} who our scouts believe has exceptional potential.`;
+        body += `\n\nThe standout prospect appears to be ${bestPlayer.name.first} ${bestPlayer.name.last}, a promising ${bestPlayer.position} who our scouts believe has exceptional potential (${Math.round(bestPlayer.potential_ability/20)} star potential).`;
     }
-    body += `\n\nThey are available for review in the squad screen.`;
+    body += `\n\nThey are all available for review in the squad screen.`;
     
     return {
-        id: `msg${messageIdCounter++}`,
+        id: `msg_youth_${club.id}_${date.day}`,
         type: 'Youth',
         sender: 'Head of Youth Development',
+        subject,
+        date: `Season ${date.season}, Day ${date.day}`,
+        body,
+        isRead: false,
+    };
+}
+
+export const generatePlayerComplaintMessage = (player: Player, club: Club, date: GameDate): InboxMessage => {
+    const subject = `Issue from ${player.name.first} ${player.name.last}`;
+    const body = `Gaffer,\n\n${player.name.first} ${player.name.last} has come to me to complain about a lack of first-team opportunities. His morale has dropped as a result.\n\nGiven his temperamental nature, it might be wise to address this, either by playing him more or speaking with him directly.\n\n- Your Assistant`;
+
+    return {
+        id: `msg_complaint_${player.id}_${date.day}`,
+        type: 'Staff',
+        sender: 'Assistant Manager',
         subject,
         date: `Season ${date.season}, Day ${date.day}`,
         body,

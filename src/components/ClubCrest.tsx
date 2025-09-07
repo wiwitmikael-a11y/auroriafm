@@ -15,7 +15,8 @@ const ClubCrest: React.FC<ClubCrestProps> = ({ clubId, className }) => {
 
     React.useEffect(() => {
         if (club) {
-            getCrest(club.crest_tags, club.palette).then(setCrestUrl);
+            const url = getCrest(club);
+            setCrestUrl(url);
         }
     }, [getCrest, club]);
 
@@ -23,7 +24,6 @@ const ClubCrest: React.FC<ClubCrestProps> = ({ clubId, className }) => {
         return <div className={`${className} bg-gray-700 rounded-full animate-pulse`} />;
     }
 
-    // Fallback to a simple div with short name if crest generation fails or is in progress
     if (!crestUrl) {
         return <div className={`${className} bg-gray-800 rounded-full flex items-center justify-center text-white font-bold`}>{club.short_name}</div>;
     }

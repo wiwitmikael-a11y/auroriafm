@@ -1,13 +1,20 @@
 // src/types.ts
 
-export type Rarity = 'Common' | 'Rare' | 'Epic' | 'Legend';
 export type Position = 'GK' | 'DF' | 'MF' | 'FW';
-export type SquadStatus = 'Starter' | 'Rotation' | 'Prospect' | 'Surplus';
+export type PreferredFoot = 'Left' | 'Right' | 'Both';
+export type Rarity = 'Common' | 'Rare' | 'Epic' | 'Legend';
 export type Morale = 'Very High' | 'High' | 'Good' | 'Fair' | 'Poor' | 'Low';
-export type Finances = 'Rich' | 'Secure' | 'Okay' | 'Insecure';
-export type FormationShape = '4-4-2' | '4-3-3' | '3-5-2' | '5-3-2';
-export type StaffRole = 'Assistant Manager' | 'Head of Youth Development' | 'Chief Scout' | 'Physio' | 'Coach';
+export type SquadStatus = 'First Team' | 'Rotation' | 'Prospect' | 'Transfer Listed';
+export type Personality = 'Ambitious' | 'Loyal' | 'Professional' | 'Temperamental';
 
+export interface PlayerAssetIds {
+  body: string;
+  head: string;
+  hair: string;
+  torso: string;
+  legs: string;
+  headwear?: string;
+}
 
 export interface PlayerAttributes {
     // Physical
@@ -15,7 +22,7 @@ export interface PlayerAttributes {
     stamina: number;
     strength: number;
     aggression: number;
-    injury_proneness: number;
+    injury_proneness: number; // Lower is better
     // Technical
     shooting: number;
     dribbling: number;
@@ -32,7 +39,7 @@ export interface PlayerAttributes {
     temporal_flux: number;
 }
 
-export interface CareerHistoryEntry {
+export interface PlayerHistoryEntry {
     season: number;
     club_id: string;
     appearances: number;
@@ -40,6 +47,12 @@ export interface CareerHistoryEntry {
     assists: number;
     cards: number;
 }
+
+export interface TrainingFocus {
+    type: 'Attribute Group' | 'Individual Attribute';
+    value: 'Physical' | 'Technical' | 'Mental' | 'Magical' | keyof PlayerAttributes;
+}
+
 
 export interface Player {
     id: string;
@@ -52,35 +65,23 @@ export interface Player {
     nation_id: string;
     age: number;
     position: Position;
-    playstyle: string;
+    playstyle_id: string;
     rarity: Rarity;
-    current_ability: number;
-    potential_ability: number;
+    personality: Personality;
+    current_ability: number; // 1-200
+    potential_ability: number; // 1-200
     attributes: PlayerAttributes;
     traits: string[];
-    lore?: string;
     squad_status: SquadStatus;
     value: number;
     morale: Morale;
-    preferred_foot: 'Left' | 'Right' | 'Both';
-    history: CareerHistoryEntry[];
-    scouting_knowledge: number; // 0-100
-    // Tactical position, can be null if not set
-    x?: number;
-    y?: number;
-    roleId?: string;
-}
-
-export interface TacticalPlayer extends Player {
-    x: number;
-    y: number;
-}
-
-export interface TacticSettings {
-    mentality: 'Very Defensive' | 'Defensive' | 'Balanced' | 'Attacking' | 'Very Attacking';
-    pressing_intensity: number; // 1-5
-    defensive_line_height: number; // 1-5
-    formation: FormationShape;
+    preferred_foot: PreferredFoot;
+    history: PlayerHistoryEntry[];
+    scouting_knowledge: number; // 0-100%
+    lore?: string;
+    training_focus: TrainingFocus | null;
+    positionIndex?: number | null;
+    assetIds: PlayerAssetIds;
 }
 
 export interface Club {
@@ -91,8 +92,9 @@ export interface Club {
     nation_id: string;
     palette: [string, string];
     stadium: string;
-    finances: Finances;
+    finances: 'Rich' | 'Secure' | 'Okay' | 'Insecure';
     crest_tags: string;
+    lore_tags: string[];
     transfer_budget: number;
     wage_budget: number;
     training_facilities: number; // 1-5
@@ -101,32 +103,36 @@ export interface Club {
     tactics: TacticSettings;
     rival_club_ids: string[];
     youthIntakeDay: number;
-}
-
-export interface StaffAttributes {
-    [key: string]: number;
+    sponsor_deals: SponsorDeal[];
 }
 
 export interface Staff {
     id: string;
     name: string;
-    role: StaffRole;
     club_id: string;
-    attributes: StaffAttributes;
+    nation_id: string;
+    role: 'Manager' | 'Assistant Manager' | 'Coach' | 'Chief Scout' | 'Scout' | 'Physio' | 'Head of Youth Development';
+    attributes: CoachAttributes | ScoutAttributes | PhysioAttributes;
 }
 
-export interface LeagueTableRow {
-    pos: number;
-    club_id: string;
-    p: number; // Played
-    w: number; // Won
-    d: number; // Drawn
-    l: number; // Lost
-    gf: number; // Goals For
-    ga: number; // Goals Against
-    gd: number; // Goal Difference
-    pts: number; // Points
-    form: ('W' | 'D' | 'L')[];
+export interface CoachAttributes {
+    attacking: number;
+    defending: number;
+    technical: number;
+    tactical: number;
+    mental: number;
+    working_with_youth: number;
+}
+
+export interface ScoutAttributes {
+    judging_ability: number;
+    judging_potential: number;
+    adaptability: number;
+}
+
+export interface PhysioAttributes {
+    physiotherapy: number;
+    prevention: number;
 }
 
 export interface Nation {
@@ -137,21 +143,45 @@ export interface Nation {
         first: string[];
         last: string[];
     };
-    attribute_biases: Partial<PlayerAttributes>;
+    attribute_biases?: Partial<PlayerAttributes>;
 }
 
-export interface GuildAction {
-    label: string;
+export interface PlayerRole {
+    name: string;
     description: string;
-    reputationChange: number;
+    position: Position[];
+    key_attributes: (keyof PlayerAttributes)[];
 }
 
-export interface GuildScenarioTemplate {
-    minRep?: number;
-    maxRep?: number;
+export interface GameDate {
+    season: number;
+    day: number;
+}
+
+export interface LeagueTableRow {
+    pos: number;
+    club_id: string;
+    p: number;
+    w: number;
+    d: number;
+    l: number;
+    gf: number;
+    ga: number;
+    gd: number;
+    pts: number;
+    form: ('W' | 'D' | 'L')[];
+}
+
+export interface InboxMessage {
+    id: string;
+    type: 'System' | 'Board' | 'Assistant' | 'Staff' | 'Scouting' | 'Media' | 'Guild' | 'Youth';
+    sender: string;
     subject: string;
+    date: string; // "Season 1, Day 1"
     body: string;
-    actions: GuildAction[];
+    isRead: boolean;
+    guildId?: string;
+    actions?: GuildAction[];
 }
 
 export interface Guild {
@@ -160,42 +190,30 @@ export interface Guild {
     description: string;
     ethos: string[];
     icon_tags: string;
-    palette: string[];
+    palette: [string, string, string];
     reputation: number;
     effects: {
         positive: string;
         negative: string;
     };
-    scenarioTemplates: GuildScenarioTemplate[];
+    scenarioTemplates: {
+        minRep?: number;
+        maxRep?: number;
+        subject: string;
+        body: string;
+        actions: GuildAction[];
+    }[];
 }
 
-export interface InboxMessage {
-    id: string;
-    type: 'System' | 'Scouting' | 'Guild' | 'Staff' | 'Board' | 'Media' | 'Youth';
-    sender: string;
-    subject: string;
-    date: string;
-    body: string;
-    isRead: boolean;
-    actions?: GuildAction[];
-    guildId?: string;
-}
-
-export interface MatchEvent {
-    minute: number;
-    type: 'Goal' | 'Chance' | 'Card' | 'Sub' | 'Commentary';
-    team: 'home' | 'away' | 'none';
+export interface GuildAction {
+    label: string;
     description: string;
-    player?: string;
+    reputationChange: number;
 }
 
-export interface MatchResult {
-    day: number;
-    home_team_id: string;
-    away_team_id: string;
-    home_score: number;
-    away_score: number;
-    events: MatchEvent[];
+export interface ScoutingAssignment {
+    playerId: string;
+    daysRemaining: number;
 }
 
 export interface Fixture {
@@ -204,20 +222,64 @@ export interface Fixture {
     away_team_id: string;
 }
 
-export interface GameDate {
-    season: number;
-    day: number;
+export interface MatchEvent {
+    minute: number;
+    type: 'Commentary' | 'Chance' | 'Goal' | 'Card' | 'Sub';
+    team: 'home' | 'away' | 'none';
+    player?: string;
+    description: string;
 }
 
-export interface ScoutingAssignment {
-    playerId: string;
-    daysRemaining: number;
+export interface MatchResult extends Fixture {
+    home_score: number;
+    away_score: number;
+    events: MatchEvent[];
 }
 
+export interface LiveMatch extends Fixture {
+    home_score: number;
+    away_score: number;
+    events: MatchEvent[];
+    time: number;
+}
 
-export interface PlayerRole {
+export type FormationShape = '4-4-2' | '4-3-3' | '3-5-2' | '5-3-2';
+
+export interface TacticSettings {
+    mentality: 'Very Defensive' | 'Defensive' | 'Balanced' | 'Attacking' | 'Very Attacking';
+    pressing_intensity: number; // 1-5
+    defensive_line_height: number; // 1-5
+    formation: FormationShape;
+}
+
+export interface Playstyle {
+    id: string;
     name: string;
     description: string;
-    position: Position[];
-    key_attributes: (keyof PlayerAttributes)[];
+    effects: Partial<Record<keyof PlayerAttributes, number>>;
 }
+
+export interface Sponsor {
+    id: string;
+    name: string;
+    slogan: string;
+    tier: 'Global' | 'Primary' | 'Secondary' | 'Partner';
+    base_value: number;
+}
+
+export interface SponsorDeal {
+    sponsorId: string;
+    weekly_income: number;
+    season: number;
+    expires_day: number;
+}
+
+export type CharacterAsset = {
+    zIndex: number;
+    tags: string[];
+    data: string;
+};
+
+export type CharacterAssetLibrary = {
+    [key: string]: CharacterAsset;
+};

@@ -1,62 +1,64 @@
-// A simple match simulation engine
-
-import { TacticalPlayer, Club, MatchResult, MatchEvent } from '../types';
+import { Player, Club, MatchResult, MatchEvent, TacticSettings } from '../types';
 import { ACC } from './ACC';
 
-const getTeamStrength = (teamId: string, allPlayers: TacticalPlayer[], clubs: Club[]): number => {
-    const club = clubs.find(c => c.id === teamId);
-    const teamPlayers = allPlayers.filter(p => p.club_id === teamId);
-    if (!club || teamPlayers.length === 0) return 50; // Default strength
+const getTeamXI = (teamId: string, allPlayers: Player[]): Player[] => {
+    return allPlayers
+        .filter(p => p.club_id === teamId)
+        .sort((a, b) => b.current_ability - a.current_ability)
+        .slice(0, 11);
+};
 
-    const averageAbility = teamPlayers.reduce((sum, p) => sum + p.current_ability, 0) / teamPlayers.length;
+const getTeamRating = (xi: Player[], tactics: TacticSettings): number => {
+    if (xi.length === 0) return 50;
+    const baseAbility = xi.reduce((sum, p) => sum + p.current_ability, 0) / xi.length;
     
-    // Add tactical modifiers later
-    let strength = averageAbility;
+    let mentalityMod = 0;
+    if (tactics.mentality.includes('Attacking')) mentalityMod = 5;
+    if (tactics.mentality.includes('Defensive')) mentalityMod = -5;
 
-    return strength;
+    return baseAbility + mentalityMod;
 }
 
-const run = (homeTeamId: string, awayTeamId: string, allPlayers: TacticalPlayer[], clubs: Club[]): MatchResult => {
-    const homeStrength = getTeamStrength(homeTeamId, allPlayers, clubs);
-    const awayStrength = getTeamStrength(awayTeamId, allPlayers, clubs);
+export const matchSimulator = {
+    run: (homeTeam: Club, awayTeam: Club, allPlayers: Player[]): MatchResult => {
+        const homeXI = getTeamXI(homeTeam.id, allPlayers);
+        const awayXI = getTeamXI(awayTeam.id, allPlayers);
 
-    const strengthDifference = homeStrength - awayStrength;
+        const homeRating = getTeamRating(homeXI, homeTeam.tactics);
+        const awayRating = getTeamRating(awayXI, awayTeam.tactics);
 
-    // Simple goal generation based on strength
-    let homeScore = 0;
-    let awayScore = 0;
-    const events: MatchEvent[] = [];
+        const ratingDifference = homeRating - awayRating;
+        const events: MatchEvent[] = [];
+        let homeScore = 0;
+        let awayScore = 0;
 
-    const homeGoalChance = 0.08 + (strengthDifference / 100);
-    const awayGoalChance = 0.06 - (strengthDifference / 100);
+        // More goals for higher quality matches, plus home advantage and rating difference
+        const expectedGoals = 1.5 + (homeRating + awayRating) / 200;
+        const homeGoalChance = (expectedGoals / 90) * (1 + (ratingDifference / 100));
+        const awayGoalChance = (expectedGoals / 90) * (1 - (ratingDifference / 100));
 
-    for (let minute = 1; minute <= 90; minute++) {
-        if (ACC.prng.getRandom([true, false, false, false])) { // Chance of an event happening
-             if (ACC.prng.seededRandom() < homeGoalChance) {
+        for (let minute = 1; minute <= 90; minute++) {
+            if (ACC.prng.seededRandom() < homeGoalChance) {
                 homeScore++;
-                const scorer = ACC.prng.getRandom(allPlayers.filter(p => p.club_id === homeTeamId && p.position !== 'GK'));
+                const scorer = ACC.prng.getRandom(homeXI.filter(p => p.position !== 'GK'));
                 events.push({ minute, type: 'Goal', team: 'home', player: `${scorer.name.first} ${scorer.name.last}`, description: 'Goal!' });
             }
             if (ACC.prng.seededRandom() < awayGoalChance) {
                 awayScore++;
-                const scorer = ACC.prng.getRandom(allPlayers.filter(p => p.club_id === awayTeamId && p.position !== 'GK'));
+                const scorer = ACC.prng.getRandom(awayXI.filter(p => p.position !== 'GK'));
                 events.push({ minute, type: 'Goal', team: 'away', player: `${scorer.name.first} ${scorer.name.last}`, description: 'Goal!' });
             }
         }
+        
+        events.sort((a, b) => a.minute - b.minute);
+
+        return {
+            day: 0, // Day will be set by the context
+            home_team_id: homeTeam.id,
+            away_team_id: awayTeam.id,
+            home_score: homeScore,
+            away_score: awayScore,
+            events,
+        };
     }
-    
-    events.sort((a,b) => a.minute - b.minute);
-
-    return {
-        day: 0, // Day will be set by the context
-        home_team_id: homeTeamId,
-        away_team_id: awayTeamId,
-        home_score: homeScore,
-        away_score: awayScore,
-        events,
-    };
-};
-
-export const matchSimulator = {
-    run,
 };

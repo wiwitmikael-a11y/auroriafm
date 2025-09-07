@@ -3,19 +3,23 @@ import { useWorld } from '../contexts/WorldContext';
 import { Link } from 'react-router-dom';
 
 const Dashboard: React.FC = () => {
-    const { managerClubId, findClubById, leagueTable } = useWorld();
+    const { managerClubId, findClubById, leagueTable, gameDate } = useWorld();
     const club = findClubById(managerClubId);
     const clubTableRow = leagueTable.find(row => row.club_id === managerClubId);
 
     if (!club) {
         return <div>Loading...</div>;
     }
+    
+    const welcomeMessage = gameDate.day === 1 && gameDate.season === 1
+        ? `Welcome, Manager. Your career at ${club.name} begins now.`
+        : "Welcome back, Manager. Here's the state of the club.";
 
     return (
         <div className="animate-fade-in">
             <div className="mb-6">
                 <h1 className="text-3xl font-display font-black text-text-emphasis uppercase tracking-widest" style={{textShadow: '0 0 10px var(--color-accent)'}}>Dashboard</h1>
-                <p className="text-md text-text-secondary">Welcome back, Manager. Here's the state of the club.</p>
+                <p className="text-md text-text-secondary">{welcomeMessage}</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">

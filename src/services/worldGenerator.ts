@@ -1,4 +1,4 @@
-import { Player, Staff } from '../types';
+import { Player, Staff, Club } from '../types';
 import { ACC } from '../engine/ACC';
 
 /**
@@ -6,10 +6,10 @@ import { ACC } from '../engine/ACC';
  * This is a wrapper around the ACC engine's capabilities.
  * @param seed A numerical seed to ensure deterministic world generation.
  */
-export const generateInitialWorld = (seed: number): { players: Player[], staff: Staff[] } => {
+export const generateInitialWorld = (seed: number): { players: Player[], staff: Staff[], clubs: Club[] } => {
     ACC.initialize(seed);
     
-    const { players, staff } = ACC.initializeWorld();
+    const { players, staff, clubs } = ACC.initializeWorld();
 
-    return { players, staff };
+    return { players, staff, clubs };
 };

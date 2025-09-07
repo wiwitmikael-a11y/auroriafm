@@ -1,26 +1,71 @@
 import React from 'react';
 import { useWorld } from '../contexts/WorldContext';
-import { Staff, StaffRole } from '../types';
+import { Staff, CoachAttributes, ScoutAttributes, PhysioAttributes } from '../types';
 
-const getStaffBuff = (staff: Staff): string => {
-    const mainAttr = Object.values(staff.attributes)[0] || 10;
-    const bonus = Math.floor((mainAttr - 10) / 2);
+const getStaffBuff = (staff: Staff): { title: string, value: string } => {
+    const { role, attributes } = staff;
+    
+    const getBestAttr = (attrs: object) => Object.entries(attrs).reduce((a, b) => a[1] > b[1] ? a : b);
 
-    switch (staff.role) {
+    switch (role) {
         case 'Assistant Manager':
-            return `+${bonus} Tactical Familiarity`;
+            const amAttrs = attributes as CoachAttributes;
+            return { title: 'In-Match Tactic', value: `+${amAttrs.tactical || 10} Knowledge` };
         case 'Head of Youth Development':
-            return `+${bonus}% Youth Prospect Quality`;
+            const hoydAttrs = attributes as CoachAttributes;
+            const hoydBest = hoydAttrs.working_with_youth || 10;
+            return { title: 'Youth Intake', value: `+${Math.floor(hoydBest / 2)}% Quality` };
         case 'Chief Scout':
-            return `+${bonus} Scouting Accuracy`;
+            const scoutAttrs = attributes as ScoutAttributes;
+            const scoutBest = getBestAttr(scoutAttrs);
+            return { title: `Best Skill: ${scoutBest[0].replace('_', ' ')}`, value: `+${scoutBest[1]} Accuracy` };
         case 'Physio':
-            return `-${bonus * 2}% Injury Recovery Time`;
+            const physioAttrs = attributes as PhysioAttributes;
+            const physioBest = getBestAttr(physioAttrs);
+            return { title: 'Team Fitness', value: `${physioBest[0] === 'prevention' ? 'Reduces' : 'Speeds up'} Injury` };
         case 'Coach':
-            return `+${bonus}% Training Effectiveness`;
+            const coachBest = getBestAttr(attributes as CoachAttributes);
+            return { title: 'Training Focus', value: `+${coachBest[1]} ${coachBest[0]}` };
         default:
-            return 'No specific buff.';
+            return { title: 'Club Buff', value: 'General Support' };
     }
-}
+};
+
+const AttributeBar: React.FC<{ label: string, value: number }> = ({ label, value }) => (
+    <div className="flex items-center justify-between text-xs">
+        <span className="text-text-secondary uppercase tracking-wider">{label}</span>
+        <div className="flex items-center gap-2">
+            <div className="w-24 h-2 bg-slate-900 rounded-full">
+                <div className="h-2 bg-accent rounded-full" style={{ width: `${value * 5}%` }} />
+            </div>
+            <span className="font-bold w-4 text-right">{value}</span>
+        </div>
+    </div>
+);
+
+const StaffCard: React.FC<{ staff: Staff }> = ({ staff }) => {
+    const buff = getStaffBuff(staff);
+    return (
+        <div className="glass-surface p-4 flex flex-col">
+            <div className="flex justify-between items-start mb-3">
+                <div>
+                    <h2 className="text-lg font-bold text-text-emphasis">{staff.name}</h2>
+                    <p className="text-accent text-sm font-semibold">{staff.role}</p>
+                </div>
+                <div className="text-right bg-accent/10 px-3 py-1 rounded-md border border-accent/30">
+                    <p className="text-xs text-accent uppercase font-bold">{buff.title}</p>
+                    <p className="font-bold text-text-emphasis">{buff.value}</p>
+                </div>
+            </div>
+            <div className="space-y-2 border-t border-border pt-3">
+                {Object.entries(staff.attributes).map(([key, value]) => (
+                    <AttributeBar key={key} label={key.replace(/_/g, ' ')} value={value as number} />
+                ))}
+            </div>
+        </div>
+    );
+};
+
 
 const Staff: React.FC = () => {
     const { staff, managerClubId } = useWorld();
@@ -33,28 +78,9 @@ const Staff: React.FC = () => {
                 <p className="text-md text-text-secondary">Your trusted backroom team.</p>
             </div>
 
-            <div className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {clubStaff.map(s => (
-                    <div key={s.id} className="glass-surface p-4">
-                        <div className="flex justify-between items-start">
-                             <div>
-                                <h2 className="text-lg font-bold text-text-emphasis">{s.name}</h2>
-                                <p className="text-accent text-sm">{s.role}</p>
-                            </div>
-                            <div className="text-right bg-accent/10 px-3 py-1 rounded-md border border-accent/30">
-                                <p className="text-xs text-accent uppercase font-bold">Club Buff</p>
-                                <p className="font-bold text-text-emphasis">{getStaffBuff(s)}</p>
-                            </div>
-                        </div>
-                        <div className="flex gap-4 mt-2 text-xs border-t border-border pt-2">
-                            {Object.entries(s.attributes).map(([key, value]) => (
-                                <div key={key}>
-                                    <span className="capitalize text-text-secondary">{key.replace(/_/g, ' ')}: </span>
-                                    <span className="font-bold">{String(value)}</span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
+                   <StaffCard key={s.id} staff={s} />
                 ))}
             </div>
         </div>

@@ -59,7 +59,7 @@ const iconMap: { [key: string]: React.FC } = {
 // --- Other Icons ---
 const SettingsIcon = () => (
     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
-        <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+        <path strokeLinecap="round" strokeLinejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066 2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
         <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
     </svg>
 );
@@ -76,7 +76,7 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
-    const { gameDate, advanceDay, managerClubId, findClubById, isProcessing, workerReady } = useWorld();
+    const { gameDate, advanceDay, managerClubId, findClubById, isProcessing, workerReady, resetGame } = useWorld();
     const club = findClubById(managerClubId);
     const location = useLocation();
 
@@ -87,8 +87,14 @@ const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
     };
     const buttonState = getButtonState();
 
+    const handleNewGame = () => {
+        if (window.confirm('Are you sure you want to start a new game? All current progress will be lost.')) {
+            resetGame();
+        }
+    };
+
     return (
-        <header className="flex-shrink-0 h-20 px-6 flex items-center justify-between glass-surface m-4 mb-0">
+        <header className="flex-shrink-0 h-20 px-4 lg:px-6 flex items-center justify-between glass-surface m-4 mb-0">
             {/* Left side: Main Navigation */}
             <nav className="flex items-center gap-2">
                 {menuConfig.map(category => {
@@ -99,27 +105,28 @@ const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
                             key={category.name}
                             to={category.links[0].path}
                             className={`topbar-button ${isCategoryActive ? 'active' : ''}`}
+                            title={category.name}
                         >
                             <Icon />
-                            <span>{category.name}</span>
+                            <span className="hidden lg:inline">{category.name}</span>
                         </Link>
                     )
                 })}
             </nav>
 
             {/* Right side: Actions & Info */}
-            <div className="flex items-center gap-6">
+            <div className="flex items-center gap-2 lg:gap-6">
                 <div className="text-right">
-                    <div className="font-bold text-text-emphasis text-sm">{club?.name}</div>
-                    <div className="text-xs text-text-secondary">Season {gameDate.season}, Day {gameDate.day}</div>
+                    <div className="hidden lg:block font-bold text-text-emphasis text-sm">{club?.name}</div>
+                    <div className="text-xs text-text-secondary">S{gameDate.season}, D{gameDate.day}</div>
                 </div>
                 <button onClick={advanceDay} className="button-primary" disabled={buttonState.disabled}>
                     {buttonState.text}
                 </button>
                  {/* Placeholder Icons */}
-                <div className="flex items-center gap-4 border-l border-border pl-6">
+                <div className="flex items-center gap-2 lg:gap-4 border-l border-border pl-2 lg:pl-6">
                     <button className="text-text-secondary hover:text-accent transition-colors" aria-label="User Profile"><UserIcon /></button>
-                    <button className="text-text-secondary hover:text-accent transition-colors" aria-label="Settings"><SettingsIcon /></button>
+                    <button onClick={handleNewGame} className="text-text-secondary hover:text-accent transition-colors" aria-label="New Game"><SettingsIcon /></button>
                 </div>
             </div>
         </header>

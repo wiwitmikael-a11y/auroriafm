@@ -13,7 +13,8 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, size = 200 }) => {
 
   const points = data.map((item, i) => {
     const angle = angleSlice * i - Math.PI / 2;
-    const valueRadius = (item.value / 100) * radius;
+    // Multiply attribute value (1-20) by 5 to fit 0-100 scale of chart
+    const valueRadius = (item.value * 5 / 100) * radius;
     const x = center + valueRadius * Math.cos(angle);
     const y = center + valueRadius * Math.sin(angle);
     return `${x},${y}`;
@@ -56,7 +57,7 @@ const RadarChart: React.FC<RadarChartProps> = ({ data, size = 200 }) => {
       <polygon points={points} fill="rgba(0, 246, 255, 0.3)" stroke="var(--color-accent)" strokeWidth="2" />
       {data.map((item, i) => {
           const angle = angleSlice * i - Math.PI / 2;
-          const valueRadius = (item.value / 100) * radius;
+          const valueRadius = (item.value * 5 / 100) * radius;
           const x = center + valueRadius * Math.cos(angle);
           const y = center + valueRadius * Math.sin(angle);
           return <circle key={i} cx={x} cy={y} r="3" fill="var(--color-accent)" />
