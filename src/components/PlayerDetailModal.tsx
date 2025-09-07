@@ -21,8 +21,9 @@ const AttributeGroup: React.FC<AttributeGroupProps> = ({ title, attributes, scou
                 const { display } = getScoutedAttributeDisplay(value, scoutingKnowledge);
                 const colorClass = scoutingKnowledge < 100 ? 'text-text-secondary' : getAttributeColorClass(value);
                 return (
-                    <div key={key} className="flex justify-between">
-                        <span className="uppercase text-text-secondary">{key.replace(/_/g, ' ')}</span>
+                    // FIX: Cast `key` to a string for the `key` prop and `replace` method.
+                    <div key={String(key)} className="flex justify-between">
+                        <span className="uppercase text-text-secondary">{String(key).replace(/_/g, ' ')}</span>
                         <span className={`font-bold ${colorClass}`}>{display}</span>
                     </div>
                 );

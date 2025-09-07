@@ -1,6 +1,7 @@
 import React from 'react';
 import { Club } from '../types';
-import { useCrests } from '../contexts/CrestContext';
+// FIX: Removed unused import for a non-existent context.
+import { assetManager } from '../services/assetManager';
 import TeamKit from './TeamKit';
 import { SPONSORS } from '../data/sponsors';
 
@@ -9,13 +10,13 @@ interface ClubCardProps {
 }
 
 const ClubCard: React.FC<ClubCardProps> = ({ club }) => {
-  const { getCrest } = useCrests();
+  // FIX: Replaced `useCrests` with `assetManager` to generate crests.
   const [crestUrl, setCrestUrl] = React.useState('');
 
   React.useEffect(() => {
-    const url = getCrest(club);
+    const url = assetManager.generateCrest(club);
     setCrestUrl(url);
-  }, [getCrest, club]);
+  }, [club]);
 
   const primarySponsorDeal = club.sponsor_deals.find(deal => {
       const sponsor = SPONSORS.find(s => s.id === deal.sponsorId);

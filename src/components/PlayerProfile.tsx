@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Player, PlayerAttributes, Morale, Personality } from '../types';
-import PlayerPortrait from './PlayerPortrait';
+import AnimatedSprite from './AnimatedSprite';
 import NationFlag from './NationFlag';
 import RadarChart from './RadarChart';
 import StarRating from './StarRating';
@@ -24,8 +24,9 @@ const AttributeGroup: React.FC<AttributeGroupProps> = ({ title, attributes, scou
                 const { display } = getScoutedAttributeDisplay(value, scoutingKnowledge);
                 const colorClass = scoutingKnowledge < 100 ? 'text-text-secondary' : getAttributeColorClass(value);
                 return (
-                    <div key={key} className="grid grid-cols-3 items-center gap-2">
-                        <span className="uppercase text-text-secondary attribute-label col-span-2">{key.replace(/_/g, ' ')}</span>
+                    // FIX: Cast `key` to a string for the `key` prop and `replace` method.
+                    <div key={String(key)} className="grid grid-cols-3 items-center gap-2">
+                        <span className="uppercase text-text-secondary attribute-label col-span-2">{String(key).replace(/_/g, ' ')}</span>
                         <span className={`font-bold ${colorClass} text-right`}>{display}</span>
                     </div>
                 );
@@ -63,16 +64,19 @@ const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer })
     
     const playstyle = PLAYSTYLES.find(p => p.id === player.playstyle_id);
 
-    const handleGenerateLore = async () => {
+    const handleGenerateLore = () => {
         setIsGeneratingLore(true);
-        try {
-            const lore = await geminiService.generatePlayerLore(player);
-            onUpdatePlayer({ ...player, lore });
-        } catch (error) {
-            console.error("Error generating player lore:", error);
-        } finally {
-            setIsGeneratingLore(false);
-        }
+        // Using setTimeout to give a feeling of processing, even though it's instant
+        setTimeout(() => {
+            try {
+                const lore = geminiService.generatePlayerLore(player);
+                onUpdatePlayer({ ...player, lore });
+            } catch (error) {
+                console.error("Error generating player lore:", error);
+            } finally {
+                setIsGeneratingLore(false);
+            }
+        }, 500);
     };
 
     const physicalAttrs: [keyof PlayerAttributes, number][] = [['speed', player.attributes.speed], ['stamina', player.attributes.stamina], ['strength', player.attributes.strength], ['aggression', player.attributes.aggression], ['injury_proneness', player.attributes.injury_proneness]];
@@ -98,8 +102,8 @@ const PlayerProfile: React.FC<PlayerProfileProps> = ({ player, onUpdatePlayer })
         {/* Header */}
         <div className="flex items-start gap-6 mb-4 pb-4 border-b border-border">
             {/* Portrait Column */}
-            <div className="flex-shrink-0 w-64 h-64">
-                <PlayerPortrait player={player} className="w-full h-full object-contain" />
+            <div className="flex-shrink-0 w-64 h-64 flex items-center justify-center">
+                <AnimatedSprite player={player} type="idle" className="w-full h-full" />
             </div>
 
             {/* Info Column */}

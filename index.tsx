@@ -4,8 +4,6 @@ import App from './src/App';
 import { WorldProvider } from './src/contexts/WorldContext';
 import { DndProvider } from 'react-dnd';
 import { HTML5Backend } from 'react-dnd-html5-backend';
-import { CrestProvider } from './src/contexts/CrestContext';
-import { PortraitProvider } from './src/contexts/PortraitContext';
 import './src/index.css';
 
 const root = ReactDOM.createRoot(
@@ -14,13 +12,9 @@ const root = ReactDOM.createRoot(
 root.render(
   <React.StrictMode>
     <WorldProvider>
-      <CrestProvider>
-        <PortraitProvider>
-          <DndProvider backend={HTML5Backend}>
-            <App />
-          </DndProvider>
-        </PortraitProvider>
-      </CrestProvider>
+      <DndProvider backend={HTML5Backend}>
+        <App />
+      </DndProvider>
     </WorldProvider>
   </React.StrictMode>
 );

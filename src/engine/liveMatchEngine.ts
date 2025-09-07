@@ -38,7 +38,7 @@ class LiveMatchEngine {
         return p1Score > p2Score;
     }
 
-    public async simulateNextChunk(): Promise<{ newTime: number; newEvents: MatchEvent[]; matchOver: boolean }> {
+    public simulateNextChunk(): { newTime: number; newEvents: MatchEvent[]; matchOver: boolean } {
         if (!this.homeTeam || !this.awayTeam || !this.match) {
             return { newTime: 90, newEvents: [], matchOver: true };
         }
@@ -72,10 +72,10 @@ class LiveMatchEngine {
                     if (this.resolveContest(attacker, 'dribbling', defender, 'tackling')) {
                         if (keeper && this.resolveContest(attacker, 'shooting', keeper, 'speed')) {
                             this.homeScore++;
-                            const description = await commentaryService.generateCommentary({ type: 'Goal', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'home', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
+                            const description = commentaryService.generateCommentary({ type: 'Goal', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'home', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
                             newEvents.push({ minute, type: 'Goal', team: 'home', player: `${attacker.name.first} ${attacker.name.last}`, description });
                         } else {
-                            const description = await commentaryService.generateCommentary({ type: 'Chance', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'home', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
+                            const description = commentaryService.generateCommentary({ type: 'Chance', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'home', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
                             newEvents.push({ minute, type: 'Chance', team: 'home', player: `${attacker.name.first} ${attacker.name.last}`, description });
                         }
                     }
@@ -87,10 +87,10 @@ class LiveMatchEngine {
                     if (this.resolveContest(attacker, 'dribbling', defender, 'tackling')) {
                         if (keeper && this.resolveContest(attacker, 'shooting', keeper, 'speed')) {
                             this.awayScore++;
-                            const description = await commentaryService.generateCommentary({ type: 'Goal', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'away', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
+                            const description = commentaryService.generateCommentary({ type: 'Goal', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'away', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
                             newEvents.push({ minute, type: 'Goal', team: 'away', player: `${attacker.name.first} ${attacker.name.last}`, description });
                         } else {
-                            const description = await commentaryService.generateCommentary({ type: 'Chance', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'away', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
+                            const description = commentaryService.generateCommentary({ type: 'Chance', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'away', player: attacker, homeScore: this.homeScore, awayScore: this.awayScore });
                             newEvents.push({ minute, type: 'Chance', team: 'away', player: `${attacker.name.first} ${attacker.name.last}`, description });
                         }
                     }
@@ -99,13 +99,13 @@ class LiveMatchEngine {
                 const actingTeam = ACC.prng.seededRandom() < 0.5 ? 'home' : 'away';
                 const players = actingTeam === 'home' ? this.homePlayers : this.awayPlayers;
                 const playerToCard = ACC.prng.getRandom(players.filter(p => p.position !== 'GK'));
-                const description = await commentaryService.generateCommentary({ type: 'Card', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam, player: playerToCard, homeScore: this.homeScore, awayScore: this.awayScore });
+                const description = commentaryService.generateCommentary({ type: 'Card', minute, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam, player: playerToCard, homeScore: this.homeScore, awayScore: this.awayScore });
                 newEvents.push({ minute, type: 'Card', team: actingTeam, player: `${playerToCard.name.first} ${playerToCard.name.last}`, description });
             }
         }
         
         if (newEvents.length === 0 && endTime < 90) {
-            const description = await commentaryService.generateCommentary({ type: 'General', minute: endTime, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'home', homeScore: this.homeScore, awayScore: this.awayScore });
+            const description = commentaryService.generateCommentary({ type: 'General', minute: endTime, homeTeam: this.homeTeam, awayTeam: this.awayTeam, actingTeam: 'home', homeScore: this.homeScore, awayScore: this.awayScore });
             newEvents.push({
                 minute: endTime,
                 type: 'Commentary',

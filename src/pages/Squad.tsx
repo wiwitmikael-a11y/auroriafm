@@ -5,7 +5,6 @@ import { Player, Morale } from '../types';
 import NationFlag from '../components/NationFlag';
 import StarRating from '../components/StarRating';
 import { TRAITS } from '../data/traits';
-import PromptGeneratorModal from '../components/PromptGeneratorModal';
 
 type SortableKeys = keyof Pick<Player, 'current_ability' | 'value' | 'morale'> | 'name';
 
@@ -15,7 +14,6 @@ const Squad: React.FC = () => {
     const { players, managerClubId, updatePlayer, findClubById } = useWorld();
     const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
     const [sortConfig, setSortConfig] = useState<{ key: SortableKeys; direction: 'asc' | 'desc' }>({ key: 'current_ability', direction: 'desc' });
-    const [isPromptModalOpen, setIsPromptModalOpen] = useState(false);
 
     const squadPlayers = useMemo(() => {
         let sortableItems = players.filter(p => p.club_id === managerClubId);
@@ -74,7 +72,6 @@ const Squad: React.FC = () => {
                             <h1 className="text-3xl font-display font-black text-text-emphasis uppercase tracking-widest" style={{ textShadow: '0 0 10px var(--color-accent)' }}>Squad</h1>
                             <p className="text-md text-text-secondary">Your current roster for {findClubById(managerClubId)?.name}.</p>
                         </div>
-                        <button onClick={() => setIsPromptModalOpen(true)} className="button-primary">Generate Player</button>
                     </div>
                 </div>
 
@@ -126,9 +123,6 @@ const Squad: React.FC = () => {
                         <PlayerProfile player={selectedPlayer} onUpdatePlayer={handleUpdatePlayer} />
                     </div>
                 </div>
-            )}
-            {isPromptModalOpen && (
-                <PromptGeneratorModal onClose={() => setIsPromptModalOpen(false)} />
             )}
         </>
     );

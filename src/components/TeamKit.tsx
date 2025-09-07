@@ -1,7 +1,7 @@
 // src/components/TeamKit.tsx
 import React, { useState, useEffect } from 'react';
 import { Club, Sponsor } from '../types';
-import { generateKit } from '../services/kitGenerator';
+import { assetManager } from '../services/assetManager';
 
 interface TeamKitProps {
   club: Club;
@@ -14,7 +14,7 @@ const TeamKit: React.FC<TeamKitProps> = ({ club, sponsor, type, className = 'w-2
   const [kitUrl, setKitUrl] = useState('');
 
   useEffect(() => {
-    const url = generateKit(club, sponsor, type);
+    const url = assetManager.generateKit(club, sponsor, type);
     setKitUrl(url);
   }, [club, sponsor, type]);
 

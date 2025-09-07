@@ -76,7 +76,7 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
-    const { gameDate, advanceDay, managerClubId, findClubById, isProcessing, workerReady, resetGame } = useWorld();
+    const { gameDate, advanceDay, managerClubId, findClubById, isProcessing, workerReady } = useWorld();
     const club = findClubById(managerClubId);
     const location = useLocation();
 
@@ -86,12 +86,6 @@ const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
         return { text: 'Advance', disabled: false };
     };
     const buttonState = getButtonState();
-
-    const handleNewGame = () => {
-        if (window.confirm('Are you sure you want to start a new game? All current progress will be lost.')) {
-            resetGame();
-        }
-    };
 
     return (
         <header className="flex-shrink-0 h-20 px-4 lg:px-6 flex items-center justify-between glass-surface m-4 mb-0">
@@ -126,7 +120,6 @@ const Topbar: React.FC<TopbarProps> = ({ menuConfig }) => {
                  {/* Placeholder Icons */}
                 <div className="flex items-center gap-2 lg:gap-4 border-l border-border pl-2 lg:pl-6">
                     <button className="text-text-secondary hover:text-accent transition-colors" aria-label="User Profile"><UserIcon /></button>
-                    <button onClick={handleNewGame} className="text-text-secondary hover:text-accent transition-colors" aria-label="New Game"><SettingsIcon /></button>
                 </div>
             </div>
         </header>

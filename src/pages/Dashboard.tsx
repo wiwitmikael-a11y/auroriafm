@@ -1,10 +1,13 @@
 import React from 'react';
 import { useWorld } from '../contexts/WorldContext';
 import { Link } from 'react-router-dom';
+import ManagerCat from '../components/ManagerCat';
 
 const Dashboard: React.FC = () => {
     const { managerClubId, findClubById, leagueTable, gameDate } = useWorld();
     const club = findClubById(managerClubId);
+    // FIX: The `clubTableRow` variable was not defined. It is now derived
+    // by searching the `leagueTable` for the manager's current club.
     const clubTableRow = leagueTable.find(row => row.club_id === managerClubId);
 
     if (!club) {
@@ -16,7 +19,7 @@ const Dashboard: React.FC = () => {
         : "Welcome back, Manager. Here's the state of the club.";
 
     return (
-        <div className="animate-fade-in">
+        <div className="animate-fade-in relative h-full">
             <div className="mb-6">
                 <h1 className="text-3xl font-display font-black text-text-emphasis uppercase tracking-widest" style={{textShadow: '0 0 10px var(--color-accent)'}}>Dashboard</h1>
                 <p className="text-md text-text-secondary">{welcomeMessage}</p>
@@ -66,6 +69,7 @@ const Dashboard: React.FC = () => {
                     </div>
                 </div>
             </div>
+            <ManagerCat />
         </div>
     );
 };

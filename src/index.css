@@ -66,7 +66,7 @@ body {
 }
 
 /* Form Elements */
-input, select {
+input, select, textarea {
   background-color: rgba(0,0,0,0.3);
   border: 1px solid var(--color-border);
   border-radius: 6px;
@@ -75,7 +75,7 @@ input, select {
   transition: border-color 0.2s;
   font-size: 0.875rem;
 }
-input:focus, select:focus {
+input:focus, select:focus, textarea:focus {
   outline: none;
   border-color: var(--color-accent);
 }
@@ -348,7 +348,7 @@ table tbody tr.highlighted-row {
 .attr-superb { color: var(--attr-superb); }
 .attr-excellent { color: var(--attr-excellent); }
 .attr-good { color: var(--attr-good); }
-.attr-average { color: var(--attr-average); }
+.attr-average { color: var(--color-average); }
 .attr-poor { color: var(--attr-poor); }
 
 
@@ -361,9 +361,59 @@ table tbody tr.highlighted-row {
     animation: fade-in 0.5s ease-out forwards;
 }
 
+/* Manager Cat Styles */
+.manager-cat {
+  position: absolute;
+  bottom: 0rem;
+  right: 1rem;
+  width: 96px;
+  height: 96px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+  image-rendering: pixelated;
+  z-index: 10;
+}
+.manager-cat:hover {
+  transform: scale(1.1) translateY(-5px);
+}
+.manager-cat.purr-animation {
+  animation: purr 0.5s ease-in-out;
+}
+@keyframes purr {
+  0%, 100% { transform: translate(0, 0) rotate(0); }
+  25% { transform: translate(1px, -1px) rotate(-1deg); }
+  50% { transform: translate(-1px, 1px) rotate(1deg); }
+  75% { transform: translate(1px, 1px) rotate(-1deg); }
+}
+
+
 .attribute-label {
     text-transform: uppercase;
 }
+
+/* Animation for Player Sprites */
+.sprite-idle {
+  background-size: 200% 100%;
+  image-rendering: pixelated;
+  animation: idle-cycle 1.5s steps(2) infinite;
+}
+
+.sprite-walk {
+  background-size: 600% 100%;
+  image-rendering: pixelated;
+  animation: walk-cycle 0.8s steps(6) infinite;
+}
+
+@keyframes idle-cycle {
+  from { background-position: 0% 0; }
+  to { background-position: 100% 0; }
+}
+
+@keyframes walk-cycle {
+  from { background-position: 0% 0; }
+  to { background-position: 100% 0; }
+}
+
 
 /* Recreating Tailwind-like utility classes used in the project */
 .hidden { display: none; }

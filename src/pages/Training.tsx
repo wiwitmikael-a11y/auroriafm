@@ -109,7 +109,8 @@ const Training: React.FC = () => {
                                                 {attributeGroups.map(g => <option key={g.value} value={`Group:${g.value}`}>{g.label}</option>)}
                                             </optgroup>
                                              <optgroup label="Attributes">
-                                                {individualAttributes.map(a => <option key={a.value} value={`Attribute:${a.value}`}>{a.label}</option>)}
+                                                {/* FIX: Cast a.value to string for the key prop. */}
+                                                {individualAttributes.map(a => <option key={String(a.value)} value={`Attribute:${a.value}`}>{a.label}</option>)}
                                             </optgroup>
                                         </select>
                                     </td>

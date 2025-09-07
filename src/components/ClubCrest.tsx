@@ -1,5 +1,5 @@
 import React from 'react';
-import { useCrests } from '../contexts/CrestContext';
+import { assetManager } from '../services/assetManager';
 import { useWorld } from '../contexts/WorldContext';
 
 interface ClubCrestProps {
@@ -8,17 +8,16 @@ interface ClubCrestProps {
 }
 
 const ClubCrest: React.FC<ClubCrestProps> = ({ clubId, className }) => {
-    const { getCrest } = useCrests();
     const { findClubById } = useWorld();
     const [crestUrl, setCrestUrl] = React.useState('');
     const club = findClubById(clubId);
 
     React.useEffect(() => {
         if (club) {
-            const url = getCrest(club);
+            const url = assetManager.generateCrest(club);
             setCrestUrl(url);
         }
-    }, [getCrest, club]);
+    }, [club]);
 
     if (!club) {
         return <div className={`${className} bg-gray-700 rounded-full animate-pulse`} />;

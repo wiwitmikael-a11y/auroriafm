@@ -7,7 +7,6 @@ import { INITIAL_MESSAGES } from '../data/inbox';
 import { generateLeagueFixtures } from '../data/league';
 import { generateBoardWelcomeMessage, generateMatchReportMessage, generateAssistantWelcomeMessage } from '../services/newsGenerator';
 import { ACC } from '../engine/ACC';
-import { parsePrompt } from '../services/promptParser';
 
 
 export enum GameState {
@@ -53,9 +52,6 @@ interface WorldContextType {
     handleGuildAction: (guildId: string, action: GuildAction) => void;
     startScoutingPlayer: (playerId: string) => void;
     updatePlayerFormation: (assignments: { playerId: string; positionIndex: number | null }[]) => void;
-    resetGame: () => void;
-    // FIX: Added addPlayerFromPrompt to the context type to allow generating players from a prompt.
-    addPlayerFromPrompt: (prompt: string) => void;
 }
 
 const WorldContext = createContext<WorldContextType | undefined>(undefined);
@@ -273,33 +269,6 @@ export const WorldProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         });
     }, []);
 
-    // FIX: Added function to generate a player from a text prompt.
-    const addPlayerFromPrompt = (prompt: string) => {
-        const club = findClubById(managerClubId);
-        if (!club) return;
-
-        const keywords = parsePrompt(prompt);
-        const newPlayer = ACC.generatePlayerFromKeywords(club, keywords);
-
-        setPlayers(prevPlayers => [...prevPlayers, newPlayer]);
-    };
-
-    const resetGame = () => {
-        setPlayers([]);
-        setStaff([]);
-        setClubs(CLUBS);
-        setManagerName('');
-        setManagerClubId('');
-        setGameDate({ season: 1, day: 1 });
-        setLeagueTable([]);
-        setInboxMessages(INITIAL_MESSAGES);
-        setGuilds(GUILDS);
-        setScoutingAssignments([]);
-        setFixtures([]);
-        setLiveMatch(null);
-        setGameState(GameState.LOGIN);
-    };
-
     const value: WorldContextType = {
         gameState,
         players,
@@ -328,8 +297,6 @@ export const WorldProvider: React.FC<{ children: ReactNode }> = ({ children }) =
         handleGuildAction,
         startScoutingPlayer,
         updatePlayerFormation,
-        resetGame,
-        addPlayerFromPrompt,
     };
 
     // This exposes managerSeed to the LoadingScreen component only

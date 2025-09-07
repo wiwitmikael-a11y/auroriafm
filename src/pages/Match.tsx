@@ -24,10 +24,9 @@ const Match: React.FC = () => {
     const awayTeam = useMemo(() => liveMatch ? findClubById(liveMatch.away_team_id) : null, [liveMatch, findClubById]);
 
     useEffect(() => {
-        const generateInitialCommentary = async () => {
+        const generateInitialCommentary = () => {
             if (!homeTeam || !awayTeam) return;
-            setIsGenerating(true);
-            const kickoffCommentary = await commentaryService.generateCommentary({
+            const kickoffCommentary = commentaryService.generateCommentary({
                 type: 'Kickoff',
                 minute: 0,
                 homeTeam: homeTeam,
@@ -42,7 +41,6 @@ const Match: React.FC = () => {
                 team: 'none',
                 description: kickoffCommentary
             }]);
-            setIsGenerating(false);
         }
 
         if (liveMatch && homeTeam && awayTeam) {
@@ -51,47 +49,47 @@ const Match: React.FC = () => {
         }
     }, [liveMatch, homeTeam, awayTeam, players]);
     
-    const handleNextHighlight = useCallback(async () => {
+    const handleNextHighlight = useCallback(() => {
         if (isGenerating || !homeTeam || !awayTeam) return;
 
         if (!matchStarted) setMatchStarted(true);
         setIsGenerating(true);
 
-        const { newTime, newEvents, matchOver } = await liveMatchEngine.simulateNextChunk();
-        
-        setTime(newTime);
+        // Add a small delay for better UX, making the simulation feel less instant.
+        setTimeout(() => {
+            const { newTime, newEvents, matchOver } = liveMatchEngine.simulateNextChunk();
+            
+            setTime(newTime);
 
-        // Calculate new scores from events
-        let newHomeScore = homeScore;
-        let newAwayScore = awayScore;
-        newEvents.forEach(event => {
-            if (event.type === 'Goal') {
-                if (event.team === 'home') newHomeScore++;
-                if (event.team === 'away') newAwayScore++;
-            }
-        });
-        setHomeScore(newHomeScore);
-        setAwayScore(newAwayScore);
-        
-        const currentEvents = [...visibleEvents, ...newEvents];
-
-        if (matchOver) {
-            setMatchFinished(true);
-            const ftCommentary = await commentaryService.generateCommentary({
-                type: 'FullTime',
-                minute: newTime,
-                homeTeam: homeTeam,
-                awayTeam: awayTeam,
-                homeScore: newHomeScore,
-                awayScore: newAwayScore,
-                actingTeam: 'home'
+            let newHomeScore = homeScore;
+            let newAwayScore = awayScore;
+            newEvents.forEach(event => {
+                if (event.type === 'Goal') {
+                    if (event.team === 'home') newHomeScore++;
+                    if (event.team === 'away') newAwayScore++;
+                }
             });
-            currentEvents.push({ minute: newTime, type: 'Commentary', team: 'none', description: ftCommentary });
-        }
+            setHomeScore(newHomeScore);
+            setAwayScore(newAwayScore);
+            
+            if (matchOver) {
+                setMatchFinished(true);
+                const ftCommentary = commentaryService.generateCommentary({
+                    type: 'FullTime',
+                    minute: newTime,
+                    homeTeam: homeTeam,
+                    awayTeam: awayTeam,
+                    homeScore: newHomeScore,
+                    awayScore: newAwayScore,
+                    actingTeam: 'home'
+                });
+                newEvents.push({ minute: newTime, type: 'Commentary', team: 'none', description: ftCommentary });
+            }
 
-        setVisibleEvents(prev => [...prev, ...newEvents].sort((a, b) => a.minute - b.minute));
-        setIsGenerating(false);
-    }, [matchStarted, isGenerating, homeTeam, awayTeam, homeScore, awayScore, visibleEvents]);
+            setVisibleEvents(prev => [...prev, ...newEvents].sort((a, b) => a.minute - b.minute));
+            setIsGenerating(false);
+        }, 300); // 300ms delay
+    }, [matchStarted, isGenerating, homeTeam, awayTeam, homeScore, awayScore]);
 
     const handleFinishMatch = () => {
         if (!liveMatch) return;
