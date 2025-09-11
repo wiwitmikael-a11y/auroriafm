@@ -1,55 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useWorld } from '../contexts/WorldContext';
-import { generateInitialWorld } from '../services/worldGenerator';
-import { generateLeagueFixtures } from '../data/league';
-import { CLUBS } from '../data/clubs';
 import { LORE_TIPS } from '../data/tips';
+import LoadingAnimation from './LoadingAnimation';
 
-const MIN_LOADING_TIME = 8000; // 8 seconds
+const MIN_LOADING_TIME = 6000; // 6 seconds
 
 const LoadingScreen: React.FC = () => {
-  const { finishWorldGeneration, managerSeed } = useWorld() as any; // Use `as any` to access managerSeed
+  const { startGame, managerSeed, managerName } = useWorld();
   const [progress, setProgress] = useState(0);
   const [statusText, setStatusText] = useState('Initializing Engine...');
   const [currentTip, setCurrentTip] = useState(LORE_TIPS[0]);
-  const worldDataRef = useRef<any>(null);
+  
+  const generationStarted = useRef(false);
 
   useEffect(() => {
-    let worldGenerated = false;
-    let minTimeElapsed = false;
+    // Memastikan startGame hanya dipanggil sekali
+    if (!generationStarted.current && managerName && managerSeed) {
+      startGame(managerName, managerSeed);
+      generationStarted.current = true;
+    }
 
-    const generationSteps = [
-      { text: 'Generating World & Sponsors...', duration: 3000, progress: 50, action: () => generateInitialWorld(managerSeed) },
-      { text: 'Scheduling Fixtures...', duration: 1500, progress: 80, action: (world: any) => ({ ...world, fixtures: generateLeagueFixtures(world.clubs) }) },
-      { text: 'Finalizing World...', duration: 1000, progress: 100, action: (world: any) => world },
+    const statuses = [
+      'Constructing Nations & Clubs...',
+      'Scheduling The Great Game...',
+      'Populating World with Souls...',
+      'Saving world to chronicles...',
+      'Finalizing Aurorian Timelines...'
     ];
-
-    const checkCompletion = () => {
-        if (worldGenerated && minTimeElapsed && worldDataRef.current) {
-            finishWorldGeneration(worldDataRef.current);
-        }
-    };
-
-    const runGeneration = async () => {
-        let currentWorldData: any = {};
-        for (const step of generationSteps) {
-            setStatusText(step.text);
-            await new Promise(resolve => setTimeout(resolve, step.duration / 2)); // simulate work
-            currentWorldData = await step.action(currentWorldData);
-            setProgress(step.progress);
-            await new Promise(resolve => setTimeout(resolve, step.duration / 2));
-        }
-        worldDataRef.current = currentWorldData;
-        worldGenerated = true;
-        checkCompletion();
-    };
-
-    runGeneration();
     
-    setTimeout(() => {
-      minTimeElapsed = true;
-      checkCompletion();
-    }, MIN_LOADING_TIME);
+    let statusIndex = 0;
+    const statusInterval = setInterval(() => {
+        statusIndex = (statusIndex + 1) % statuses.length;
+        setStatusText(statuses[statusIndex]);
+    }, MIN_LOADING_TIME / statuses.length);
+
+    // Animate progress bar over the minimum loading time
+    const progressInterval = setInterval(() => {
+        setProgress(p => Math.min(p + 1, 100));
+    }, MIN_LOADING_TIME / 100);
 
     // Tip cycler
     const tipInterval = setInterval(() => {
@@ -62,16 +50,16 @@ const LoadingScreen: React.FC = () => {
 
     return () => {
       clearInterval(tipInterval);
+      clearInterval(statusInterval);
+      clearInterval(progressInterval);
     };
 
-  }, [managerSeed, finishWorldGeneration]);
+  }, [managerSeed, managerName, startGame]);
 
   return (
     <div className="w-screen h-screen bg-background flex flex-col p-8 text-center">
         <div className="flex-grow flex flex-col items-center justify-center">
-            <h1 className="text-3xl md:text-4xl font-display font-black text-text-emphasis tracking-widest uppercase" style={{textShadow: '0 0 15px var(--color-accent)'}}>
-                Building Auroria
-            </h1>
+            <LoadingAnimation />
             
             <div className="w-full max-w-lg my-8">
                 <div className="h-4 w-full bg-slate-900 border border-border rounded-full overflow-hidden">

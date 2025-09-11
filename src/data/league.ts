@@ -1,5 +1,4 @@
 import { Fixture, Club } from "../types";
-import { CLUBS } from "./clubs";
 
 export const generateLeagueFixtures = (clubs: Club[]): Fixture[] => {
     const fixtures: Fixture[] = [];
@@ -47,6 +46,3 @@ export const generateLeagueFixtures = (clubs: Club[]): Fixture[] => {
 
     return fixtures.sort((a,b) => a.day - b.day);
 };
-
-// Initial generation for context
-export const LEAGUE_FIXTURES = generateLeagueFixtures([...CLUBS]);

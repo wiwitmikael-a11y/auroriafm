@@ -14,11 +14,20 @@ const NicknameModal: React.FC<NicknameModalProps> = ({ player, onUpdatePlayer, o
   const [selectedNickname, setSelectedNickname] = useState<string | null>(null);
 
   useEffect(() => {
-    setIsLoading(true);
-    // Use the procedural service exclusively
-    const generatedNicknames = proceduralService.generateNickname(player);
-    setNicknames(generatedNicknames);
-    setIsLoading(false);
+    const fetchNicknames = async () => {
+      setIsLoading(true);
+      try {
+        const generatedNicknames = await proceduralService.generateNickname(player);
+        setNicknames(generatedNicknames);
+      } catch (error) {
+        console.error("Failed to fetch nicknames:", error);
+        // Set a default fallback nickname on error
+        setNicknames([`The ${player.name.last}`]);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchNicknames();
   }, [player]);
 
   const handleApplyNickname = () => {
@@ -36,7 +45,7 @@ const NicknameModal: React.FC<NicknameModalProps> = ({ player, onUpdatePlayer, o
         
         {isLoading ? (
           <div className="text-center p-8">
-            <p className="text-accent animate-pulse">Generating epic names...</p>
+            <p className="text-accent animate-pulse">Consulting the Chroniclers for epic names...</p>
           </div>
         ) : (
           <div className="space-y-3 mb-6">
@@ -57,7 +66,7 @@ const NicknameModal: React.FC<NicknameModalProps> = ({ player, onUpdatePlayer, o
         )}
 
         <div className="flex justify-end gap-4 mt-8">
-          <button onClick={onClose} className="py-2 px-4 rounded bg-slate-700/50 hover:bg-slate-600/50 transition-colors">Cancel</button>
+          <button onClick={onClose} className="button-secondary">Cancel</button>
           <button
             onClick={handleApplyNickname}
             disabled={!selectedNickname || isLoading}

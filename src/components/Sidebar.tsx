@@ -1,8 +1,8 @@
 import React from 'react';
-import { NavLink, useLocation } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import { useWorld } from '../contexts/WorldContext';
 import ClubCrest from './ClubCrest';
-import { MenuConfig } from '../App';
+import { MenuConfig } from '../data/menu';
 
 interface SidebarProps {
     menuConfig: MenuConfig;
@@ -11,14 +11,9 @@ interface SidebarProps {
 const Sidebar: React.FC<SidebarProps> = ({ menuConfig }) => {
   const { managerClubId, findClubById } = useWorld();
   const club = findClubById(managerClubId);
-  const location = useLocation();
-
-  const activeCategory = menuConfig.find(category => 
-    category.links.some(link => location.pathname.startsWith(link.path))
-  ) || menuConfig[0]; // Default to first category
 
   const navLinkClass = ({ isActive }: { isActive: boolean }) =>
-    `sidebar-link ${isActive ? 'active' : ''}`;
+    `sidebar-nav-link ${isActive ? 'active' : ''}`;
 
   return (
     <aside className="w-64 flex-shrink-0 flex flex-col p-4 glass-surface m-4">
@@ -31,19 +26,26 @@ const Sidebar: React.FC<SidebarProps> = ({ menuConfig }) => {
             </div>
         )}
       </div>
-      <nav className="flex-grow space-y-2 overflow-y-auto" aria-labelledby="sidebar-heading">
-        <h2 id="sidebar-heading" className="text-lg font-display text-text-primary px-2 mb-2">{activeCategory.name}</h2>
-        <div className="space-y-2">
-            {activeCategory.links.map(link => (
+      <nav className="flex-grow space-y-4 overflow-y-auto pr-2">
+        {menuConfig.map((category) => (
+          <div key={category.title}>
+            <h2 className="sidebar-category-title">
+              <category.icon />
+              <span>{category.title}</span>
+            </h2>
+            <div className="space-y-1 mt-2">
+              {category.links.map(link => (
                 <NavLink key={link.path} to={link.path} className={navLinkClass}>
-                    <span className="link-indicator"></span>
-                    <span>{link.label}</span>
+                  <link.icon />
+                  <span>{link.label}</span>
                 </NavLink>
-            ))}
-        </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </nav>
       <div className="mt-auto text-center pt-4">
-        <p className="text-xs text-text-secondary/50">Aetherium Chronicle v0.3</p>
+        <p className="text-xs text-text-secondary/50">Aetherium Chronicle v0.4</p>
       </div>
     </aside>
   );

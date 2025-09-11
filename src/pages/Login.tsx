@@ -5,12 +5,12 @@ const Login: React.FC = () => {
   const { startGame } = useWorld();
   const [managerName, setManagerName] = useState('');
   const [seed, setSeed] = useState(Math.floor(Math.random() * 100000));
-
+  
+  // State isLoading lokal tidak lagi diperlukan karena gameState dikelola oleh context
   const handleStartGame = (e: React.FormEvent) => {
     e.preventDefault();
-    if (managerName.trim()) {
-      startGame(managerName.trim(), seed);
-    }
+    if (!managerName.trim()) return;
+    startGame(managerName.trim(), seed);
   };
   
   const handleRandomizeSeed = () => {

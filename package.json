@@ -11,6 +11,9 @@
   "dependencies": {
     "@dicebear/collection": "^9.0.1",
     "@dicebear/core": "^9.0.1",
+    "@google/genai": "^1.17.0",
+    "immer": "^10.1.1",
+    "mongodb": "^6.8.0",
     "react": "^19.1.1",
     "react-dnd": "^16.0.1",
     "react-dnd-html5-backend": "^16.0.1",

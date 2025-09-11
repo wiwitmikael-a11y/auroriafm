@@ -8,13 +8,13 @@ interface FormationSlotProps {
     position: string;
     positionIndex: number;
     coords: { x: number; y: number };
-    onDrop: (item: { id: string, from: 'squad' | 'pitch', originalIndex: number }, targetIndex: number | null) => void;
+    onDrop: (item: { id: string, from: 'squad' | 'pitch', originalIndex?: number }, targetIndex: number | null) => void;
 }
 
 const FormationSlot: React.FC<FormationSlotProps> = ({ player, position, positionIndex, coords, onDrop }) => {
     const [{ isOver, canDrop }, drop] = useDrop(() => ({
         accept: 'player',
-        drop: (item: { id: string, from: 'squad' | 'pitch', originalIndex: number }) => onDrop(item, positionIndex),
+        drop: (item: { id: string, from: 'squad' | 'pitch', originalIndex?: number }) => onDrop(item, positionIndex),
         collect: (monitor) => ({
             isOver: !!monitor.isOver(),
             canDrop: !!monitor.canDrop(),

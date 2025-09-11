@@ -1,28 +1,8 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { useWorld } from '../contexts/WorldContext';
-import { CLUBS } from '../data/clubs';
-import { LeagueTableRow } from '../types';
 
 const LeagueTable: React.FC = () => {
-    const { managerClubId } = useWorld();
-    
-    // Using mock data for demonstration as league simulation is not implemented.
-    const mockTable: LeagueTableRow[] = useMemo(() => CLUBS.map((club, index) => ({
-        pos: index + 1,
-        club_id: club.id,
-        p: 5,
-        w: 3,
-        d: 1,
-        l: 1,
-        gf: Math.floor(Math.random() * 15) + 5,
-        ga: Math.floor(Math.random() * 10),
-        gd: 5, // This will be recalculated
-        pts: (3*3 + 1*1),
-        form: ['W', 'W', 'D', 'L', 'W'] as ('W' | 'D' | 'L')[],
-    })).map(row => ({...row, gd: row.gf - row.ga})).sort((a,b) => b.pts - a.pts || b.gd - a.gd)
-      .map((row, index) => ({...row, pos: index + 1})), []);
-
-    const findClubName = (id: string) => CLUBS.find(c => c.id === id)?.name || 'Unknown Club';
+    const { managerClubId, leagueTable, findClubById } = useWorld();
 
     return (
         <div className="animate-fade-in">
@@ -48,10 +28,10 @@ const LeagueTable: React.FC = () => {
                         </tr>
                     </thead>
                     <tbody>
-                        {mockTable.map(row => (
+                        {leagueTable.map(row => (
                             <tr key={row.club_id} className={row.club_id === managerClubId ? 'highlighted-row' : ''}>
                                 <td className="font-bold">{row.pos}</td>
-                                <td>{findClubName(row.club_id)}</td>
+                                <td>{findClubById(row.club_id)?.name || 'Unknown Club'}</td>
                                 <td>{row.p}</td>
                                 <td>{row.w}</td>
                                 <td>{row.d}</td>

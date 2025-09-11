@@ -4,10 +4,8 @@ import { Link } from 'react-router-dom';
 import ManagerCat from '../components/ManagerCat';
 
 const Dashboard: React.FC = () => {
-    const { managerClubId, findClubById, leagueTable, gameDate } = useWorld();
+    const { managerClubId, findClubById, leagueTable, gameDate, fixtures } = useWorld();
     const club = findClubById(managerClubId);
-    // FIX: The `clubTableRow` variable was not defined. It is now derived
-    // by searching the `leagueTable` for the manager's current club.
     const clubTableRow = leagueTable.find(row => row.club_id === managerClubId);
 
     if (!club) {
@@ -17,6 +15,19 @@ const Dashboard: React.FC = () => {
     const welcomeMessage = gameDate.day === 1 && gameDate.season === 1
         ? `Welcome, Manager. Your career at ${club.name} begins now.`
         : "Welcome back, Manager. Here's the state of the club.";
+
+    const nextFixture = fixtures
+        .filter(f => f.day >= gameDate.day && (f.home_team_id === managerClubId || f.away_team_id === managerClubId))
+        .sort((a, b) => a.day - b.day)[0];
+    
+    let opponent, location, matchDay;
+    if (nextFixture) {
+        const isHome = nextFixture.home_team_id === managerClubId;
+        const opponentId = isHome ? nextFixture.away_team_id : nextFixture.home_team_id;
+        opponent = findClubById(opponentId);
+        location = isHome ? '(Home)' : '(Away)';
+        matchDay = `Season ${gameDate.season}, Day ${nextFixture.day}`;
+    }
 
     return (
         <div className="animate-fade-in relative h-full">
@@ -29,14 +40,22 @@ const Dashboard: React.FC = () => {
                 {/* Next Match */}
                 <div className="glass-surface p-4 flex flex-col">
                     <h2 className="text-lg font-display font-bold text-accent mb-3 uppercase">Next Match</h2>
-                    <div className="flex-grow">
-                        <p className="text-md text-text-primary">Vs. Gearhaven United</p>
-                        <p className="text-sm text-text-secondary">(Home)</p>
-                        <p className="text-xs text-text-secondary mt-1">Season 1, Day 14</p>
-                    </div>
-                    <Link to="/match" className="mt-4 inline-block button-primary text-center">
-                        Go to Match
-                    </Link>
+                    {nextFixture && opponent ? (
+                        <>
+                            <div className="flex-grow">
+                                <p className="text-md text-text-primary">Vs. {opponent.name}</p>
+                                <p className="text-sm text-text-secondary">{location}</p>
+                                <p className="text-xs text-text-secondary mt-1">{matchDay}</p>
+                            </div>
+                            <Link to="/fixtures" className="mt-4 inline-block button-primary text-center">
+                                View Fixtures
+                            </Link>
+                        </>
+                    ) : (
+                        <div className="flex-grow flex items-center justify-center">
+                             <p className="text-text-secondary text-center">No upcoming matches scheduled.</p>
+                        </div>
+                    )}
                 </div>
 
                 {/* League Position */}

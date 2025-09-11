@@ -2,15 +2,6 @@ import { InboxMessage } from '../types';
 
 export const INITIAL_MESSAGES: InboxMessage[] = [
     {
-        id: 'msg001',
-        type: 'System',
-        sender: 'Aurorian Football Association',
-        subject: 'Welcome to Avalon Albion!',
-        date: 'Season 1, Day 1',
-        body: `Manager,\n\nOn behalf of the AFA, welcome to your new position at Avalon Albion. We trust your leadership will bring honor and glory to the club.\n\nThe board has set a preliminary expectation of a mid-table finish this season. Of course, we know you're aiming much higher.\n\nYour office at the Commonwealth Grounds is ready. The staff awaits your direction.\n\nMay your tactics be sharp and your players inspired.\n\n- Lord Harrington, AFA President`,
-        isRead: false,
-    },
-    {
         id: 'msg002',
         type: 'Scouting',
         sender: 'Elara Vance, Chief Scout',

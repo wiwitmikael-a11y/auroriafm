@@ -1,125 +1,90 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useWorld } from '../contexts/WorldContext';
-import { Player, TrainingFocus, PlayerAttributes } from '../types';
-
-const attributeGroups: { label: string; value: TrainingFocus['value'] }[] = [
-    { label: 'Physical', value: 'Physical' },
-    { label: 'Technical', value: 'Technical' },
-    { label: 'Mental', value: 'Mental' },
-    { label: 'Magical', value: 'Magical' },
-];
-
-const individualAttributes: { label: string; value: keyof PlayerAttributes }[] = [
-    { label: 'Speed', value: 'speed' },
-    { label: 'Stamina', value: 'stamina' },
-    { label: 'Strength', value: 'strength' },
-    { label: 'Shooting', value: 'shooting' },
-    { label: 'Dribbling', value: 'dribbling' },
-    { label: 'Passing', value: 'passing' },
-    { label: 'Tackling', value: 'tackling' },
-    { label: 'Composure', value: 'composure' },
-    { label: 'Vision', value: 'vision' },
-    { label: 'Arcane Dribble', value: 'arcane_dribble' },
-    { label: 'Elemental Shot', value: 'elemental_shot' },
-];
-
+import { Player } from '../types';
+import StarRating from '../components/StarRating';
+import NationFlag from '../components/NationFlag';
 
 const Training: React.FC = () => {
     const { players, managerClubId, updatePlayer } = useWorld();
-    const squadPlayers = players.filter(p => p.club_id === managerClubId).sort((a,b) => b.current_ability - a.current_ability);
+    const [selectedPlayer, setSelectedPlayer] = useState<Player | null>(null);
 
-    const handleFocusChange = (playerId: string, focusString: string) => {
-        const player = players.find(p => p.id === playerId);
-        if (!player) return;
+    const squadPlayers = players.filter(p => p.club_id === managerClubId);
 
-        if (focusString === "None") {
-            updatePlayer({ ...player, training_focus: null });
-            return;
-        }
-
-        const [type, value] = focusString.split(':');
-        let newFocus: TrainingFocus | null = null;
-        if (type === 'Group') {
-            newFocus = { type: 'Attribute Group', value: value as any };
-        } else if (type === 'Attribute') {
-            newFocus = { type: 'Individual Attribute', value: value as keyof PlayerAttributes };
-        }
-        
-        if (newFocus) {
-            updatePlayer({ ...player, training_focus: newFocus });
+    const handleSetFocus = (focus: { type: string; value: string } | null) => {
+        if (selectedPlayer) {
+            const updatedPlayer = { ...selectedPlayer, training_focus: focus };
+            updatePlayer(updatedPlayer);
+            setSelectedPlayer(updatedPlayer);
         }
     };
 
-    const getPlayerFocusString = (player: Player): string => {
-        if (!player.training_focus) return "None";
-        if (player.training_focus.type === 'Attribute Group') {
-            return `Group:${player.training_focus.value}`;
-        }
-        return `Attribute:${player.training_focus.value}`;
-    }
+    const attributeGroups = ['Physical', 'Technical', 'Mental', 'Arcane'];
 
     return (
-        <div className="animate-fade-in h-full flex flex-col">
-            <div className="mb-6 flex-shrink-0">
-                <h1 className="text-3xl font-display font-black text-text-emphasis uppercase tracking-widest" style={{textShadow: '0 0 10px var(--color-accent)'}}>Training</h1>
-                <p className="text-md text-text-secondary">Develop your players and hone your team's skills.</p>
-            </div>
-
-            <div className="glass-surface p-6 mb-4 flex-shrink-0">
-                 <h2 className="text-xl font-display font-bold text-accent mb-4">Team Training Focus</h2>
-                 <div className="space-y-4">
-                    <p className="text-sm text-text-secondary">Set the primary focus for team training sessions this week. This provides a small chance of improvement for all players in the chosen area.</p>
-                    <select className="w-full">
-                        <option>Balanced</option>
-                        <option>Attacking Movement</option>
-                        <option>Defensive Positioning</option>
-                        <option>Set Pieces</option>
-                        <option>Physical Conditioning</option>
-                    </select>
-                 </div>
-            </div>
-            
-             <div className="flex-grow glass-surface min-h-0">
-                <div className="h-full overflow-y-auto">
-                    <table>
+        <div className="animate-fade-in flex h-full gap-4">
+            <div className="w-1/2 flex flex-col">
+                <div className="mb-6 flex-shrink-0">
+                    <h1 className="text-3xl font-display font-black text-text-emphasis uppercase tracking-widest" style={{textShadow: '0 0 10px var(--color-accent)'}}>Training</h1>
+                    <p className="text-md text-text-secondary">Develop your players and hone their skills.</p>
+                </div>
+                <div className="glass-surface overflow-y-auto flex-grow min-h-0">
+                     <table className="w-full">
                         <thead>
                             <tr>
                                 <th>Player</th>
-                                <th>Age</th>
-                                <th>Pos</th>
                                 <th>Ability</th>
-                                <th className="w-1/3">Individual Focus</th>
+                                <th>Current Focus</th>
                             </tr>
                         </thead>
                         <tbody>
                             {squadPlayers.map(player => (
-                                 <tr key={player.id}>
-                                    <td>{player.name.first} {player.name.last}</td>
-                                    <td>{player.age}</td>
-                                    <td>{player.position}</td>
-                                    <td className="font-bold">{player.current_ability}</td>
+                                <tr key={player.id} onClick={() => setSelectedPlayer(player)} className={`cursor-pointer ${selectedPlayer?.id === player.id ? 'highlighted-row' : ''}`}>
                                     <td>
-                                        <select 
-                                            className="w-full !my-1" 
-                                            value={getPlayerFocusString(player)}
-                                            onChange={(e) => handleFocusChange(player.id, e.target.value)}
-                                        >
-                                            <option value="None">None</option>
-                                            <optgroup label="Attribute Groups">
-                                                {attributeGroups.map(g => <option key={g.value} value={`Group:${g.value}`}>{g.label}</option>)}
-                                            </optgroup>
-                                             <optgroup label="Attributes">
-                                                {/* FIX: Cast a.value to string for the key prop. */}
-                                                {individualAttributes.map(a => <option key={String(a.value)} value={`Attribute:${a.value}`}>{a.label}</option>)}
-                                            </optgroup>
-                                        </select>
+                                        <div className="flex items-center gap-2">
+                                            <NationFlag nationId={player.nation_id} />
+                                            <div>
+                                                <p className="font-bold">{player.name.first} {player.name.last}</p>
+                                                <p className="text-xs text-text-secondary">{player.position}</p>
+                                            </div>
+                                        </div>
                                     </td>
+                                    <td><StarRating currentAbility={player.current_ability} potentialAbility={player.potential_ability} /></td>
+                                    <td className="text-xs">{player.training_focus ? `${player.training_focus.type}: ${player.training_focus.value}` : 'None'}</td>
                                 </tr>
                             ))}
                         </tbody>
                     </table>
                 </div>
-             </div>
+            </div>
+            <div className="w-1/2">
+                 <div className="glass-surface p-6 h-full mt-20">
+                    {selectedPlayer ? (
+                        <div>
+                            <h2 className="text-xl font-bold text-accent mb-4">Set Training Focus for {selectedPlayer.name.last}</h2>
+                            <p className="text-sm text-text-secondary mb-4">
+                                Current Focus: <span className="font-bold text-text-primary">{selectedPlayer.training_focus ? `${selectedPlayer.training_focus.type}: ${selectedPlayer.training_focus.value}` : 'None'}</span>
+                            </p>
+                            
+                            <h3 className="font-bold text-text-emphasis mb-2">Attribute Groups</h3>
+                            <div className="grid grid-cols-2 gap-2 mb-4">
+                                {attributeGroups.map(group => (
+                                    <button key={group} onClick={() => handleSetFocus({ type: 'Attribute Group', value: group })} className="button-primary">
+                                        Focus {group}
+                                    </button>
+                                ))}
+                            </div>
+
+                            <button onClick={() => handleSetFocus(null)} className="w-full button-primary" style={{backgroundColor: 'var(--color-danger)'}}>
+                                Remove Focus
+                            </button>
+                        </div>
+                    ) : (
+                        <div className="flex items-center justify-center h-full">
+                            <p className="text-text-secondary">Select a player to set their training focus.</p>
+                        </div>
+                    )}
+                </div>
+            </div>
         </div>
     );
 };

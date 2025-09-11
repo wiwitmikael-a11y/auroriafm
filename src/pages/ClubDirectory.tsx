@@ -1,8 +1,10 @@
 import React from 'react';
-import { CLUBS } from '../data/clubs';
+import { useWorld } from '../contexts/WorldContext';
 import ClubCard from '../components/ClubCard';
 
 const ClubDirectory: React.FC = () => {
+  const { clubs } = useWorld();
+
   return (
     <div className="animate-fade-in">
       <div className="mb-6">
@@ -11,7 +13,7 @@ const ClubDirectory: React.FC = () => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-        {CLUBS.map(club => (
+        {clubs.map(club => (
           <ClubCard key={club.id} club={club} />
         ))}
       </div>

@@ -4,13 +4,22 @@
 // --- Start of inlined dependencies ---
 
 const NATIONS = [
-    { id: 'avalon', name: 'Republic of Avalon', adjective: 'Avalonian', name_templates: { first: ['Arthur', 'Gideon', 'Celeste', 'Rowan'], last: ['Stonewall', 'Swift', 'Morningstar', 'Highwind'] } },
-    { id: 'gearhaven', name: 'Imperium of Gearhaven', adjective: 'Gearhavenite', name_templates: { first: ['Magnus', 'Bron', 'Valeria', 'Corvus'], last: ['Ironfoot', 'Cogsworth', 'Hammerhand', 'Steamwright'] } },
-    { id: 'arcadia', name: 'Kingdom of Arcadia', adjective: 'Arcadian', name_templates: { first: ['Lyra', 'Aelar', 'Faelan', 'Sorina'], last: ['Silversong', 'Moonshadow', 'Starcaller', 'Spellweaver'] } },
-    { id: 'grimmr', name: 'Konfederacy of Grimmr', adjective: 'Grimmric', name_templates: { first: ['Uzgoth', 'Grom', 'Karga', 'Thora'], last: ['Skullcrusher', 'Axebeak', 'Ironhide', 'Stonefist'] } },
-    { id: 'solis', name: 'Sunstone Queendom of Solis', adjective: 'Solian', name_templates: { first: ['Zafina', 'Kaelen', 'Nia', 'Rashid'], last: ['Sandstrider', 'Dunehunter', 'Sunstone', 'Mirage'] } },
-    { id: 'veridia', name: 'Veridian Grove-Clans', adjective: 'Veridian', name_templates: { first: ['Cian', 'Briar', 'Faolan', 'Rhiannon'], last: ['Wildheart', 'Thornback', 'Riverun', 'Greenmantle'] } }
+    { id: 'avalon', name: 'Republic of Avalon', adjective: 'Avalonian', name_templates: { first: ['Arthur', 'Gideon', 'Celeste', 'Rowan', 'Kaelan', 'Isolde', 'Percival', 'Elara'], last: ['Stonewall', 'Swift', 'Morningstar', 'Highwind', 'Brightmore', 'Oakheart'] } },
+    { id: 'gearhaven', name: 'Imperium of Gearhaven', adjective: 'Gearhavenite', name_templates: { first: ['Magnus', 'Bron', 'Valeria', 'Corvus', 'Griselda', 'JAX-7', 'Kael', 'Petra'], last: ['Ironfoot', 'Cogsworth', 'Hammerhand', 'Steamwright', 'Piston', 'Fulcrum'] } },
+    { id: 'arcadia', name: 'Kingdom of Arcadia', adjective: 'Arcadian', name_templates: { first: ['Lyra', 'Aelar', 'Faelan', 'Sorina', 'Valerius', 'Elara', 'Orion', 'Seraphina'], last: ['Silversong', 'Moonshadow', 'Starcaller', 'Spellweaver', 'Sunstrider', 'Aetherwing'] } },
+    { id: 'grimmr', name: 'Konfederacy of Grimmr', adjective: 'Grimmric', name_templates: { first: ['Uzgoth', 'Grom', 'Karga', 'Thora', 'Borin', 'Grak', 'Ragnar', 'Fraya'], last: ['Skullcrusher', 'Axebeak', 'Ironhide', 'Stonefist', 'Direfang', 'Bloodtusk'] } },
+    { id: 'solis', name: 'Sunstone Queendom of Solis', adjective: 'Solian', name_templates: { first: ['Zafina', 'Kaelen', 'Nia', 'Rashid', 'Samir', 'Layla'], last: ['Sandstrider', 'Dunehunter', 'Sunstone', 'Mirage', 'Scorpion'] } },
+    { id: 'veridia', name: 'Veridian Grove-Clans', adjective: 'Veridian', name_templates: { first: ['Cian', 'Briar', 'Faolan', 'Rhiannon', 'Torin', 'Nessa'], last: ['Wildheart', 'Thornback', 'Riverun', 'Greenmantle', 'Barkhide'] } }
 ];
+
+const CULTURAL_BLUEPRINTS = {
+    avalon: { name: 'Republic of Avalon', aesthetic_philosophy: { primary_shapes: ['shield'], secondary_patterns: ['checkers'], color_psychology: { primary: '#006400', secondary: '#FFD700' }, symbol_library_tags: ['lion'] }, tactical_philosophy: { preferred_formations: ['4-4-2'], mentality_bias: { 'Balanced': 1 } }, social_structure: { common_personalities: ['Loyal'] } },
+    gearhaven: { name: 'Imperium of Gearhaven', aesthetic_philosophy: { primary_shapes: ['gear'], secondary_patterns: ['grid'], color_psychology: { primary: '#808080', secondary: '#FFA500' }, symbol_library_tags: ['gear'] }, tactical_philosophy: { preferred_formations: ['4-3-3'], mentality_bias: { 'Attacking': 1 } }, social_structure: { common_personalities: ['Professional'] } },
+    arcadia: { name: 'Kingdom of Arcadia', aesthetic_philosophy: { primary_shapes: ['crescent_moon'], secondary_patterns: ['swirls'], color_psychology: { primary: '#483D8B', secondary: '#00FFFF' }, symbol_library_tags: ['star'] }, tactical_philosophy: { preferred_formations: ['4-3-3'], mentality_bias: { 'Balanced': 1 } }, social_structure: { common_personalities: ['Ambitious'] } },
+    grimmr: { name: 'Konfederacy of Grimmr', aesthetic_philosophy: { primary_shapes: ['axe_head'], secondary_patterns: ['scratches'], color_psychology: { primary: '#B22222', secondary: '#696969' }, symbol_library_tags: ['flame'] }, tactical_philosophy: { preferred_formations: ['3-5-2'], mentality_bias: { 'Very Attacking': 1 } }, social_structure: { common_personalities: ['Temperamental'] } },
+    solis: { name: 'Sunstone Queendom of Solis', aesthetic_philosophy: { primary_shapes: ['sun_disk'], secondary_patterns: ['dunes'], color_psychology: { primary: '#FFD700', secondary: '#8B4513' }, symbol_library_tags: ['sun'] }, tactical_philosophy: { preferred_formations: ['4-3-3'], mentality_bias: { 'Attacking': 1 } }, social_structure: { common_personalities: ['Loyal'] } },
+    veridia: { name: 'Veridian Grove-Clans', aesthetic_philosophy: { primary_shapes: ['leaf'], secondary_patterns: ['vines'], color_psychology: { primary: '#228B22', secondary: '#8B4513' }, symbol_library_tags: ['tree'] }, tactical_philosophy: { preferred_formations: ['3-5-2'], mentality_bias: { 'Balanced': 1 } }, social_structure: { common_personalities: ['Professional'] } }
+};
 
 const TRAITS = {
     LEADERSHIP: { name: 'Leadership', description: 'Inspires teammates on the pitch.' },
@@ -25,9 +34,19 @@ const PLAYSTYLES = [
 
 class ACC_Worker {
     seed = 0;
-    playerIdCounter = 22 * 14; // Start after initial world gen
+    playerIdCounter = 0; 
+    
+    private clubNameParts = {
+        avalon: { prefixes: ['Avalon', 'Aethelgard'], suffixes: ['Albion', 'Sentinels'] },
+        gearhaven: { prefixes: ['Gearhaven', 'Steamforge'], suffixes: ['United', 'Titans'] },
+        arcadia: { prefixes: ['Arcane', 'Skyport'], suffixes: ['Academy', 'Aviators'] },
+        grimmr: { prefixes: ['Dragonflame', 'Ironfang'], suffixes: ['Knights', 'Raiders'] },
+        solis: { prefixes: ['Sunstone', 'Oasis'], suffixes: ['Nomads', 'Sentinels'] },
+        veridia: { prefixes: ['Veridia', 'Thornwood'], suffixes: ['Wildhearts', 'Rangers'] }
+    };
+    private stadiumNameParts = { first: ['Grand', 'Royal'], second: ['Forge', 'Grounds'] };
 
-    initialize(seed) { this.seed = seed; }
+    initialize(seed) { this.seed = seed; this.playerIdCounter = seed * 1000; }
 
     prng = {
         seededRandom: () => {
@@ -43,9 +62,71 @@ class ACC_Worker {
             return Math.floor((r * (1 - mix) + bias * mix) * (max - min)) + min;
         }
     };
-
-    generatePlayerName(nation) { return { first: this.prng.getRandom(nation.name_templates.first), last: this.prng.getRandom(nation.name_templates.last) }; }
     
+    generateInitialWorld(seed) {
+        this.initialize(seed);
+        const clubs = this._generateClubs();
+        const players = [];
+        const staff = [];
+        clubs.forEach(club => {
+            players.push(...this._generatePlayersForClub(club));
+            staff.push(...this._generateStaffForClub(club));
+        });
+        return { players, staff, clubs };
+    }
+
+    _generateClubs() {
+        const clubs = [];
+        const clubNames = new Set();
+        for (const [nationId, blueprint] of Object.entries(CULTURAL_BLUEPRINTS)) {
+            const numClubs = this.prng.seededRandom() > 0.7 ? 3 : 2;
+            for (let i = 0; i < numClubs; i++) {
+                let name;
+                do {
+                    name = `${this.prng.getRandom(this.clubNameParts[nationId].prefixes)} ${this.prng.getRandom(this.clubNameParts[nationId].suffixes)}`;
+                } while (clubNames.has(name));
+                clubNames.add(name);
+                const financeStatuses = ['Rich', 'Secure', 'Okay', 'Insecure'];
+                const newClub = {
+                    id: `${nationId}_${name.replace(/\s+/g, '_').toLowerCase()}`, name, short_name: name.split(' ').map(n => n[0]).join('').slice(0, 3).toUpperCase(), nickname: `The ${name.split(' ')[1]}`,
+                    nation_id: nationId, palette: [blueprint.aesthetic_philosophy.color_psychology.primary, blueprint.aesthetic_philosophy.color_psychology.secondary],
+                    stadium: `${this.prng.getRandom(this.stadiumNameParts.first)} ${this.prng.getRandom(this.stadiumNameParts.second)}`,
+                    finances: this.prng.getRandom(financeStatuses), crest_tags: blueprint.aesthetic_philosophy.symbol_library_tags.join(','), lore_tags: [],
+                    transfer_budget: Math.floor(this.prng.seededRandom() * 5000000), wage_budget: Math.floor(this.prng.seededRandom() * 50000),
+                    training_facilities: 3, youth_facilities: 3, staff_ids: [],
+                    tactics: { mentality: 'Balanced', pressing_intensity: 3, defensive_line_height: 3, formation: this.prng.getRandom(blueprint.tactical_philosophy.preferred_formations) },
+                    rival_club_ids: [], youthIntakeDay: 280 + Math.floor(this.prng.seededRandom() * 30), sponsor_deals: [],
+                };
+                clubs.push(newClub);
+            }
+        }
+        return clubs;
+    }
+    
+    _generatePlayersForClub(club) {
+        const players = [];
+        const nation = NATIONS.find(n => n.id === club.nation_id);
+        for (let i = 0; i < 25; i++) {
+            players.push(this.generatePlayer(String(this.playerIdCounter++), club, false));
+        }
+        return players;
+    }
+
+    _generateStaffForClub(club) {
+        const staff = [];
+        const nation = NATIONS.find(n => n.id === club.nation_id);
+        const roles = ['Assistant Manager', 'Head of Youth Development', 'Chief Scout', 'Physio', 'Coach'];
+        roles.forEach(role => {
+            staff.push({
+                id: `staff_${club.id}_${role.replace(/\s+/g, '_')}`, name: `${this.prng.getRandom(nation.name_templates.first)} ${this.prng.getRandom(nation.name_templates.last)}`,
+                club_id: club.id, nation_id: nation.id, age: 30 + Math.floor(this.prng.seededRandom() * 25), role,
+                attributes: role === 'Chief Scout' ? { judging_ability: 10, judging_potential: 10 } : role === 'Physio' ? { physiotherapy: 10, prevention: 10 } : { attacking: 10, defending: 10 }
+            });
+        });
+        return staff;
+    }
+
+
     generatePlayer(id, club, isYouth = false) {
         const nation = NATIONS.find(n => n.id === club.nation_id) || this.prng.getRandom(NATIONS);
         const age = isYouth ? this.prng.getBiasedRandom(16, 19, 0, 1) : this.prng.getBiasedRandom(18, 34, 0.3, 1);
@@ -59,7 +140,7 @@ class ACC_Worker {
         const rarityRoll = this.prng.seededRandom();
         const personalities = ['Ambitious', 'Loyal', 'Professional', 'Temperamental'];
         return {
-            id: `player_${id}`, name: this.generatePlayerName(nation), club_id: club.id, nation_id: nation.id, age, position: this.prng.getRandom(positions),
+            id: `player_${id}`, name: { first: this.prng.getRandom(nation.name_templates.first), last: this.prng.getRandom(nation.name_templates.last) }, club_id: club.id, nation_id: nation.id, age, position: this.prng.getRandom(positions),
             playstyle_id: 'versatile', rarity: rarityRoll > 0.99 ? 'Legend' : rarityRoll > 0.9 ? 'Epic' : rarityRoll > 0.6 ? 'Rare' : 'Common',
             personality: this.prng.getRandom(personalities), current_ability, potential_ability, attributes, traits: [this.prng.getRandom(Object.keys(TRAITS))],
             squad_status: 'Prospect', value: Math.floor(Math.pow(current_ability, 1.8) * 50), morale: 'Fair',
@@ -91,6 +172,31 @@ class ACC_Worker {
 }
 
 const ACC = new ACC_Worker();
+
+const generateLeagueFixtures = (clubs) => {
+    const fixtures = [];
+    let localClubs = [...clubs];
+    if (localClubs.length % 2 !== 0) localClubs.push({ id: 'dummy' });
+    const numTeams = localClubs.length, numRounds = numTeams - 1, matchesPerRound = numTeams / 2;
+    let dayCounter = 7;
+    const teamIds = localClubs.map(c => c.id);
+    for (let round = 0; round < numRounds; round++) {
+        for (let match = 0; match < matchesPerRound; match++) {
+            const home = teamIds[match], away = teamIds[numTeams - 1 - match];
+            if (home !== 'dummy' && away !== 'dummy') fixtures.push({ day: dayCounter, home_team_id: home, away_team_id: away });
+        }
+        const lastTeam = teamIds.pop();
+        teamIds.splice(1, 0, lastTeam);
+        dayCounter += 7;
+    }
+    const firstHalf = [...fixtures];
+    firstHalf.forEach(f => {
+        fixtures.push({ day: dayCounter, home_team_id: f.away_team_id, away_team_id: f.home_team_id });
+        if (fixtures.length % matchesPerRound === 0) dayCounter += 7;
+    });
+    return fixtures.sort((a, b) => a.day - b.day);
+};
+
 
 const matchSimulator = {
     run: (homeTeam, awayTeam, allPlayers) => {
@@ -152,7 +258,17 @@ const NEWS_GENERATOR_WORKER = {
 self.onmessage = (e) => {
     const { type, payload } = e.data;
 
-    if (type === 'ADVANCE_DAY') {
+    if (type === 'GENERATE_WORLD') {
+        const { seed } = payload;
+        const { players, staff, clubs } = ACC.generateInitialWorld(seed);
+        const fixtures = generateLeagueFixtures(clubs);
+        self.postMessage({
+            type: 'WORLD_GENERATED',
+            payload: { players, staff, clubs, fixtures }
+        });
+    }
+
+    else if (type === 'ADVANCE_DAY') {
         const { players, clubs, gameDate, scoutingAssignments, fixtures, leagueTable } = payload;
         
         ACC.initialize(gameDate.season * 1000 + gameDate.day);
@@ -169,16 +285,19 @@ self.onmessage = (e) => {
             todaysFixtures.forEach(fixture => {
                 const homeTeam = clubs.find(c => c.id === fixture.home_team_id);
                 const awayTeam = clubs.find(c => c.id === fixture.away_team_id);
-                const alreadyPlayed = updatedLeagueTable.find(r => r.club_id === homeTeam.id)?.p > leagueTable.find(r => r.club_id === homeTeam.id)?.p;
-                if (homeTeam && awayTeam && !alreadyPlayed) {
-                    const result = matchSimulator.run(homeTeam, awayTeam, updatedPlayers);
-                    matchResults.push(result);
-                    const hIdx = updatedLeagueTable.findIndex(r => r.club_id === result.home_team_id), aIdx = updatedLeagueTable.findIndex(r => r.club_id === result.away_team_id);
-                    if (hIdx > -1) { updatedLeagueTable[hIdx].p++; updatedLeagueTable[hIdx].gf += result.home_score; updatedLeagueTable[hIdx].ga += result.away_score; }
-                    if (aIdx > -1) { updatedLeagueTable[aIdx].p++; updatedLeagueTable[aIdx].gf += result.away_score; updatedLeagueTable[aIdx].ga += result.home_score; }
-                    if (result.home_score > result.away_score) { if(hIdx > -1) {updatedLeagueTable[hIdx].pts += 3; updatedLeagueTable[hIdx].w++;} if(aIdx > -1) updatedLeagueTable[aIdx].l++; }
-                    else if (result.away_score > result.home_score) { if(aIdx > -1) {updatedLeagueTable[aIdx].pts += 3; updatedLeagueTable[aIdx].w++;} if(hIdx > -1) updatedLeagueTable[hIdx].l++; }
-                    else { if(hIdx > -1) {updatedLeagueTable[hIdx].pts += 1; updatedLeagueTable[hIdx].d++;} if(aIdx > -1) {updatedLeagueTable[aIdx].pts += 1; updatedLeagueTable[aIdx].d++;} }
+
+                if (homeTeam && awayTeam) {
+                    const alreadyPlayed = updatedLeagueTable.find(r => r.club_id === homeTeam.id)?.p > leagueTable.find(r => r.club_id === homeTeam.id)?.p;
+                    if (!alreadyPlayed) {
+                        const result = matchSimulator.run(homeTeam, awayTeam, updatedPlayers);
+                        matchResults.push(result);
+                        const hIdx = updatedLeagueTable.findIndex(r => r.club_id === result.home_team_id), aIdx = updatedLeagueTable.findIndex(r => r.club_id === result.away_team_id);
+                        if (hIdx > -1) { updatedLeagueTable[hIdx].p++; updatedLeagueTable[hIdx].gf += result.home_score; updatedLeagueTable[hIdx].ga += result.away_score; }
+                        if (aIdx > -1) { updatedLeagueTable[aIdx].p++; updatedLeagueTable[aIdx].gf += result.away_score; updatedLeagueTable[aIdx].ga += result.home_score; }
+                        if (result.home_score > result.away_score) { if(hIdx > -1) {updatedLeagueTable[hIdx].pts += 3; updatedLeagueTable[hIdx].w++;} if(aIdx > -1) updatedLeagueTable[aIdx].l++; }
+                        else if (result.away_score > result.home_score) { if(aIdx > -1) {updatedLeagueTable[aIdx].pts += 3; updatedLeagueTable[aIdx].w++;} if(hIdx > -1) updatedLeagueTable[hIdx].l++; }
+                        else { if(hIdx > -1) {updatedLeagueTable[hIdx].pts += 1; updatedLeagueTable[hIdx].d++;} if(aIdx > -1) {updatedLeagueTable[aIdx].pts += 1; updatedLeagueTable[aIdx].d++;} }
+                    }
                 }
             });
             updatedLeagueTable.forEach(r => { r.gd = r.gf - r.ga; });
@@ -217,13 +336,11 @@ self.onmessage = (e) => {
 
         // 4. Personality Events & Youth Intake
         clubs.forEach(club => {
-             // Youth Intake
-            if (club.youthIntakeDay === newGameDate.day) {
+             if (club.youthIntakeDay === newGameDate.day) {
                 const newYouth = ACC.generateYouthIntakeForClub(club);
                 updatedPlayers.push(...newYouth);
                 newMessages.push(NEWS_GENERATOR_WORKER.generateYouthIntakeMessage(club, newYouth, newGameDate));
             }
-            // Personality
             updatedPlayers.filter(p => p.club_id === club.id).forEach(player => {
                 if (player.personality === 'Temperamental' && (player.morale === 'Poor' || player.morale === 'Low') && ACC.prng.seededRandom() < 0.1) {
                     newMessages.push(NEWS_GENERATOR_WORKER.generatePlayerComplaintMessage(player, newGameDate));
